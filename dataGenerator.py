@@ -11,6 +11,10 @@ class Config:
     timeLimits = 1000 # ms
     exitWhenThereIsADiscrepancy = True
 
+    # Debug
+    skipGenerate = False
+    skipRun = False
+
 globalConfig = Config()
 
 class Data:
