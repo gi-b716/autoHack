@@ -63,10 +63,7 @@ if config.skipRun==False:
                 diffCount += 1
 
         elif result[0]==0:
-            print("Catch diff on data {0}!\nAns: ".format(samplesId))
-            print(result[3])
-            print("Output: ")
-            print(result[4])
+            print("Catch diff on data {0}!\nAns:\n{1}\nOutput:\n{2}\n".format(samplesId,result[3],result[4]))
             logger.warning("Catch diff! See {0} and {1}".format(refer[0],refer[1]))
             if config.exitWhenThereIsADiscrepancy==False:
                 time.sleep(5)
