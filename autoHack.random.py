@@ -1,4 +1,5 @@
 import dataGenerator
+import _thread
 import logging
 import time
 import sys
@@ -30,13 +31,7 @@ if config.skipGenerate==False:
     os.system("md hackData")
     logger.info("Cleaning hack data history")
     for samplesId in range(config.numberOfSamples):
-        refer = data.getFileName(samplesId)
-        data.generateData(samplesId)
-        os.system("move .\{0} .\hackData\{0}".format(refer[0]))
-        os.system("move .\{0} .\hackData\{0}".format(refer[1]))
-        os.system("cls")
-        print("Generating hack data: {0} | {1}/{2}".format((samplesId+1)/config.numberOfSamples, samplesId+1, config.numberOfSamples))
-        logger.info("Generating hack data: {0} | {1}/{2}".format((samplesId+1)/config.numberOfSamples, samplesId+1, config.numberOfSamples))
+        data.generateData(samplesId, logger)
 else:
     logger.info("Skip generate")
 

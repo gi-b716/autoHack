@@ -3,7 +3,7 @@ import random
 import os
 
 class Config:
-    numberOfSamples = 10
+    numberOfSamples = 1
     sourceFile = "source.exe"
     stdFile = "std.exe"
     dataFile = "hack"
@@ -13,9 +13,9 @@ class Config:
 
     # Debug
     skipGenerate = False
-    skipRun = False
+    skipRun = True
 
-globalConfig = Config()
+globalConfigTimeLimits = Config().timeLimits
 
 class Data:
     def __init__(self, config:Config):
@@ -28,23 +28,34 @@ class Data:
         freOutputFileName = "{0}.out".format(self.config.freFileName)
         return [inputFileName,ansFileName,freInputFileName,freOutputFileName]
 
-    def generateData(self, id):
+    def generateData(self, id, logger):
+        print("Generating hack data: {0} | {1}/{2}".format((id+1)/self.config.numberOfSamples, id+1, self.config.numberOfSamples))
+        logger.info("Generating hack data: {0} | {1}/{2}".format((id+1)/self.config.numberOfSamples, id+1, self.config.numberOfSamples))
+
         inputFileName = self.getFileName(id)[0]
         ansFileName = self.getFileName(id)[1]
         freInputFileName = self.getFileName(id)[2]
         freOutputFileName = self.getFileName(id)[3]
 
-        with open(inputFileName, "w") as inputFile:
+        os.system("mkdir data{0}".format(id))
+        os.system("copy .\{0} .\data{1}".format(self.config.stdFile, id))
+
+        with open(".\data{0}\{1}".format(id, inputFileName), "w") as inputFile:
             a = random.randint(1,1000000000)
             b = random.randint(1,1000000000)
             inputFile.write("{0} {1}".format(a,b))
         
-        os.system("rename {0} {1}".format(inputFileName,freInputFileName))
-        os.system(".\{0}".format(self.config.stdFile))
-        os.system("rename {0} {1}".format(freInputFileName,inputFileName))
-        os.system("rename {0} {1}".format(freOutputFileName,ansFileName))
+        os.system("rename .\data{0}\{1} {2}".format(id, inputFileName,freInputFileName))
+        os.chdir(".\data{0}".format(id))
+        os.system(self.config.stdFile)
+        os.chdir("..")
+        os.system("rename .\data{0}\{1} {2}".format(id, freInputFileName,inputFileName))
+        os.system("rename .\data{0}\{1} {2}".format(id, freOutputFileName,ansFileName))
+        os.system("move .\data{0}\{1} .\hackData".format(id, inputFileName))
+        os.system("move .\data{0}\{1} .\hackData".format(id, ansFileName))
+        os.system("rmdir /s/q data{0}".format(id))
 
-    @func_timeout.func_set_timeout(globalConfig.timeLimits/1000)
+    @func_timeout.func_set_timeout(globalConfigTimeLimits/1000)
     def runCode(self):
         os.system(".\{0}".format(self.config.sourceFile))
 
