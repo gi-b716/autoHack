@@ -9,7 +9,7 @@ class Config:
     dataFile = "hack"
     freFileName = "plus"
     timeLimits = 1000 # ms
-    exitWhenThereIsADiscrepncy = True
+    exitWhenThereIsADiscrepancy = True
     waitTime = 3.0 # s
 
     # Debug
