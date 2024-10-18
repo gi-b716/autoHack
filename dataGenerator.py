@@ -77,6 +77,7 @@ class Data:
 
             ans = ansFile.read()
             output = outputFile.read()
+
             if self.config.ignoreSomeCharactersAtTheEnd:
                 ans = ans.rstrip("\n");
                 output = output.rstrip("\n");
@@ -87,15 +88,17 @@ class Data:
                     for i in range(len(anst)):
                         if anst[i].rstrip()!=outputt[i].rstrip():
                             result = 0
-                            if globalConfig.saveWrongOutput==True:
+                            if self.config.saveWrongOutput==True:
                                 os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
+                                os.system("rename .\\wrongOutput\\{0} {1}{2}.out".format(freOutputFileName,self.config.dataFile,id))
                             break
             else:
                 if ans==output:
                     result = 1
                 else:
-                    if globalConfig.saveWrongOutput==True:
+                    if self.config.saveWrongOutput==True:
                         os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
+                        os.system("rename .\\wrongOutput\\{0} {1}{2}.out".format(freOutputFileName,self.config.dataFile,id))
 
             ansFile.close()
             outputFile.close()
