@@ -9,7 +9,8 @@ class Config:
     dataFile = "hack"
     freFileName = "plus"
     timeLimits = 1000 # ms
-    exitWhenThereIsADiscrepancy = True
+    exitWhenThereIsADiscrepncy = True
+    waitTime = 3.0 # s
 
     # Debug
     skipGenerate = False
@@ -38,7 +39,7 @@ class Data:
             a = random.randint(1,1000000000)
             b = random.randint(1,1000000000)
             inputFile.write("{0} {1}".format(a,b))
-        
+
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
         os.system(".\{0}".format(self.config.stdFile))
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
@@ -74,12 +75,20 @@ class Data:
 
             ans = ansFile.read()
             output = outputFile.read()
-            if ans==output:
+            ans = ans.rstrip("\n");
+            output = output.rstrip("\n");
+            anst = ans.splitlines();
+            outputt = output.splitlines();
+            if len(anst)==len(outputt):
                 result = 1
-            
+                for i in range(len(anst)):
+                    if anst[i].rstrip()!=outputt[i].rstrip():
+                        result = 0
+                        break
+
             ansFile.close()
             outputFile.close()
-        
+
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("del {0} /q".format(freOutputFileName))
 
