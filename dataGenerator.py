@@ -11,6 +11,7 @@ class Config:
     timeLimits = 1000 # ms
     exitWhenThereIsADiscrepancy = True
     waitTime = 3.0 # s
+    ignoreSomeCharactersAtTheEnd = True
 
     # Debug
     skipGenerate = False
@@ -41,13 +42,13 @@ class Data:
             inputFile.write("{0} {1}".format(a,b))
 
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
-        os.system(".\{0}".format(self.config.stdFile))
+        os.system(".\\{0}".format(self.config.stdFile))
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("rename {0} {1}".format(freOutputFileName,ansFileName))
 
     @func_timeout.func_set_timeout(globalConfig.timeLimits/1000)
     def runCode(self):
-        os.system(".\{0}".format(self.config.sourceFile))
+        os.system(".\\{0}".format(self.config.sourceFile))
 
     def runHacking(self, id):
         inputFileName = self.getFileName(id)[0]
@@ -75,16 +76,20 @@ class Data:
 
             ans = ansFile.read()
             output = outputFile.read()
-            ans = ans.rstrip("\n");
-            output = output.rstrip("\n");
-            anst = ans.splitlines();
-            outputt = output.splitlines();
-            if len(anst)==len(outputt):
-                result = 1
-                for i in range(len(anst)):
-                    if anst[i].rstrip()!=outputt[i].rstrip():
-                        result = 0
-                        break
+            if self.config.ignoreSomeCharactersAtTheEnd:
+                ans = ans.rstrip("\n");
+                output = output.rstrip("\n");
+                anst = ans.splitlines();
+                outputt = output.splitlines();
+                if len(anst)==len(outputt):
+                    result = 1
+                    for i in range(len(anst)):
+                        if anst[i].rstrip()!=outputt[i].rstrip():
+                            result = 0
+                            break
+            else:
+                if ans==output:
+                    result = 1
 
             ansFile.close()
             outputFile.close()

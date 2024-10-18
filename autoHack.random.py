@@ -32,8 +32,8 @@ if config.skipGenerate==False:
     for samplesId in range(config.numberOfSamples):
         refer = data.getFileName(samplesId)
         data.generateData(samplesId)
-        os.system("move .\{0} .\hackData\{0}".format(refer[0]))
-        os.system("move .\{0} .\hackData\{0}".format(refer[1]))
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
         print("Generating hack data: {0} | {1}/{2}".format((samplesId+1)/config.numberOfSamples, samplesId+1, config.numberOfSamples))
         logger.info("Generating hack data: {0} | {1}/{2}".format((samplesId+1)/config.numberOfSamples, samplesId+1, config.numberOfSamples))
@@ -45,14 +45,14 @@ if config.skipRun==False:
     logger.info("Start random hacking...")
     for samplesId in range(config.numberOfSamples):
         refer = data.getFileName(samplesId)
-        os.system("move .\hackData\{0} .\{0}".format(refer[0]))
-        os.system("move .\hackData\{0} .\{0}".format(refer[1]))
+        os.system("move .\\hackData\\{0} .\\{0}".format(refer[0]))
+        os.system("move .\\hackData\\{0} .\\{0}".format(refer[1]))
         os.system("cls")
         print("Judging: {0} | {1}/{2}".format((samplesId+1)/config.numberOfSamples, samplesId+1, config.numberOfSamples))
         logger.info("Judging: {0} | {1}/{2}".format((samplesId+1)/config.numberOfSamples, samplesId+1, config.numberOfSamples))
         result = data.runHacking(samplesId)
-        os.system("move .\{0} .\hackData\{0}".format(refer[0]))
-        os.system("move .\{0} .\hackData\{0}".format(refer[1]))
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
 
         if result[1]==True:
