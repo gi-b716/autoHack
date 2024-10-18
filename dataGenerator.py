@@ -12,6 +12,7 @@ class Config:
     exitWhenThereIsADiscrepancy = True
     waitTime = 3.0 # s
     ignoreSomeCharactersAtTheEnd = True
+    saveWrongOutput = True
 
     # Debug
     skipGenerate = False
@@ -70,7 +71,7 @@ class Data:
             os.system("taskkill /F /IM {0}".format(self.config.sourceFile))
             os.system("cls")
 
-        if(timeOutTag==False):
+        if timeOutTag==False:
             ansFile = open("{0}".format(ansFileName), "r")
             outputFile = open("{0}".format(freOutputFileName), "r")
 
@@ -86,10 +87,15 @@ class Data:
                     for i in range(len(anst)):
                         if anst[i].rstrip()!=outputt[i].rstrip():
                             result = 0
+                            if globalConfig.saveWrongOutput==True:
+                                os.system("move .\\{0} .\\wrongOutput".format(freOutputFileName))
                             break
             else:
                 if ans==output:
                     result = 1
+                else:
+                    if globalConfig.saveWrongOutput==True:
+                        os.system("move .\\{0} .\\wrongOutput".format(freOutputFileName))
 
             ansFile.close()
             outputFile.close()

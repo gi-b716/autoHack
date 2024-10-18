@@ -43,6 +43,10 @@ else:
 # Start random hacking
 if config.skipRun==False:
     logger.info("Start random hacking...")
+    os.system("rmdir /s/q wrongOutput")
+    if config.saveWrongOutput==True:
+        os.system("md wrongOutput")
+        logger.info("Cleaning wrong output history")
     for samplesId in range(config.numberOfSamples):
         refer = data.getFileName(samplesId)
         os.system("move .\\hackData\\{0} .\\{0}".format(refer[0]))
