@@ -4,15 +4,20 @@ import os
 
 class Config:
     numberOfSamples = 10
-    sourceFile = "source.exe"
-    stdFile = "std.exe"
+    sourceFile = "source"
+    stdFile = "std"
     dataFile = "hack"
-    freFileName = "plus"
     timeLimits = 1000 # ms
     exitWhenThereIsADiscrepancy = True
     waitTime = 3.0 # s
     ignoreSomeCharactersAtTheEnd = True
     saveWrongOutput = True
+
+    # Program
+    compileBeforeRun = False
+    compileArgs = ""
+    useFileIO = True
+    freFileName = "plus"
 
     # Debug
     skipGenerate = False
@@ -23,6 +28,7 @@ globalConfig = Config()
 class Data:
     def __init__(self, config:Config):
         self.config = config
+        self.customArgs = ""
 
     def getFileName(self, id):
         inputFileName = "{0}{1}.in".format(self.config.dataFile,str(id))
@@ -43,13 +49,16 @@ class Data:
             inputFile.write("{0} {1}".format(a,b))
 
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
-        os.system(".\\{0}".format(self.config.stdFile))
+        if self.config.useFileIO==False:
+            os.system(".\\{0} < {1} > {2}".format(self.config.stdFile,freInputFileName,freOutputFileName))
+        else:
+            os.system(".\\{0}".format(self.config.stdFile))
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("rename {0} {1}".format(freOutputFileName,ansFileName))
 
     @func_timeout.func_set_timeout(globalConfig.timeLimits/1000)
-    def runCode(self):
-        os.system(".\\{0}".format(self.config.sourceFile))
+    def runCode(self, runCommand):
+        os.system(runCommand)
 
     def runHacking(self, id):
         inputFileName = self.getFileName(id)[0]
@@ -64,8 +73,14 @@ class Data:
 
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
 
+        runCommand = ""
+        if self.config.useFileIO==False:
+            runCommand = ".\\{0} < {1} > {2}".format(self.config.sourceFile,freInputFileName,freOutputFileName)
+        else:
+            runCommand = ".\\{0}".format(self.config.sourceFile)
+
         try:
-            self.runCode()
+            self.runCode(runCommand)
         except func_timeout.exceptions.FunctionTimedOut:
             timeOutTag = True
             os.system("taskkill /F /IM {0}".format(self.config.sourceFile))

@@ -23,6 +23,14 @@ logger.info("Init logger")
 os.system("echo off")
 os.system("cls")
 
+if config.compileBeforeRun==True:
+    print("Compile program(s)")
+    logger.info("Compile program(s)")
+    if config.skipGenerate==False:
+        os.system("g++ {0}.cpp -o {0} {1}".format(config.stdFile,config.compileArgs))
+    if config.skipRun==False:
+        os.system("g++ {0}.cpp -o {0} {1}".format(config.sourceFile,config.compileArgs))
+
 # Generate hack data
 if config.skipGenerate==False:
     logger.info("Start generate hack data")
