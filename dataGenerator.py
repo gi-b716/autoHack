@@ -88,14 +88,14 @@ class Data:
                         if anst[i].rstrip()!=outputt[i].rstrip():
                             result = 0
                             if globalConfig.saveWrongOutput==True:
-                                os.system("move .\\{0} .\\wrongOutput".format(freOutputFileName))
+                                os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
                             break
             else:
                 if ans==output:
                     result = 1
                 else:
                     if globalConfig.saveWrongOutput==True:
-                        os.system("move .\\{0} .\\wrongOutput".format(freOutputFileName))
+                        os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
 
             ansFile.close()
             outputFile.close()
