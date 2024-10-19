@@ -20,26 +20,30 @@ inputFile.write()
 
 其他配置都在第 5 行开始的 `Config` 类内，各项配置如下：
 
-### Line 6 - Line 14
+### Line 6 - Line 13
 
 `numberOfSamples` : 随机生成的数据数量  
 `sourceFile` : 源文件名，不带拓展名  
 `stdFile` ： 标程文件名，不带拓展名  
-`dataFile` : 存储的数据文件前缀  
 `timeLimits` : 时间限制  
 `exitWhenThereIsADiscrepancy` : 是否在出现差异时直接退出  
 `waitTime` : 差异详细信息显示的秒数  
 `ignoreSomeCharactersAtTheEnd` : 是否忽略最后的空行及行末空格  
 `saveWrongOutput` ： 是否存储错误的输出
 
-### Line 16 - Line 20 (Program)
+### Line 15 - Line 18 (Program)
 
 `compileBeforeRun` : 是否由 AH 编译程序  
 `compileArgs` : 编译参数，`-o` 由 AH 自动填写  
 `useFileIO` : 是否使用文件输入输出  
-`freFileName` : 输入输出文件名，不带拓展名
 
-### Line 22 - Line 24 (Debug)
+### Line 20 - Line 23 (File)
+
+`dataFileName` : 数据文件名及其拓展名
+`fileName` : 文件输入输出文件名及其拓展名
+`wrongOutputFileName` : 存储的错误输出文件名及其拓展名
+
+### Line 25 - Line 27 (Debug)
 
 `skipGenerate` : 是否跳过生成数据，跳过则使用上一次的数据  
 `skipRun` : 是否跳过运行，若您把 AH 当作数据生成器，此项可能有用

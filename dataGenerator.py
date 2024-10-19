@@ -6,7 +6,6 @@ class Config:
     numberOfSamples = 10
     sourceFile = "source"
     stdFile = "std"
-    dataFile = "hack"
     timeLimits = 1000 # ms
     exitWhenThereIsADiscrepancy = True
     waitTime = 3.0 # s
@@ -16,11 +15,12 @@ class Config:
     # Program
     compileBeforeRun = False
     compileArgs = ""
-    useFileIO = True
-    useSameFileName = True
-    freFileName = "plus"
-    inputFileName = ""
-    outputFileName = ""
+    useFileIO = False
+
+    # File
+    dataFileName = (("hack","in"),("hack","ans"))
+    fileName = (("plus","in"),("plus","out"))
+    wrongOutputFileName = ("plus","out")
 
     # Debug
     skipGenerate = False
@@ -33,16 +33,10 @@ class Data:
         self.config = config
 
     def getFileName(self, id):
-        inputFileName = "{0}{1}.in".format(self.config.dataFile,str(id))
-        ansFileName = "{0}{1}.ans".format(self.config.dataFile,str(id))
-        freInputFileName = ""
-        freOutputFileName = ""
-        if self.config.useSameFileName==True:
-            freInputFileName = "{0}.in".format(self.config.freFileName)
-            freOutputFileName = "{0}.out".format(self.config.freFileName)
-        else:
-            freInputFileName = "{0}.in".format(self.config.inputFileName)
-            freOutputFileName = "{0}.out".format(self.config.outputFileName)
+        inputFileName = "{0}{1}.{2}".format(self.config.dataFileName[0][0],id,self.config.dataFileName[0][1])
+        ansFileName = "{0}{1}.{2}".format(self.config.dataFileName[1][0],id,self.config.dataFileName[1][1])
+        freInputFileName = "{0}.{1}".format(self.config.fileName[0][0],self.config.fileName[0][1])
+        freOutputFileName = "{0}.{1}".format(self.config.fileName[1][0],self.config.fileName[1][1])
         return [inputFileName,ansFileName,freInputFileName,freOutputFileName]
 
     def generateData(self, id):
@@ -113,19 +107,19 @@ class Data:
                             result = 0
                             if self.config.saveWrongOutput==True:
                                 os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
-                                os.system("rename .\\wrongOutput\\{0} {1}{2}.out".format(freOutputFileName,self.config.dataFile,id))
+                                os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
                             break
                 else:
                     if self.config.saveWrongOutput==True:
                         os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
-                        os.system("rename .\\wrongOutput\\{0} {1}{2}.out".format(freOutputFileName,self.config.dataFile,id))
+                        os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
             else:
                 if ans==output:
                     result = 1
                 else:
                     if self.config.saveWrongOutput==True:
                         os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
-                        os.system("rename .\\wrongOutput\\{0} {1}{2}.out".format(freOutputFileName,self.config.dataFile,id))
+                        os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
 
             ansFile.close()
             outputFile.close()
