@@ -85,7 +85,7 @@ class Data:
             self.runCode(runCommand)
         except func_timeout.exceptions.FunctionTimedOut:
             timeOutTag = True
-            os.system("taskkill /F /IM {0}".format(self.config.sourceFile))
+            os.system("taskkill /F /IM {0}.exe".format(self.config.sourceFile))
             os.system("cls")
 
         if timeOutTag==False:
