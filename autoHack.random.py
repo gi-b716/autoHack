@@ -30,6 +30,7 @@ if config.compileBeforeRun==True:
         os.system("g++ {0}.cpp -o {0} {1}".format(config.stdFile,config.compileArgs))
     if config.skipRun==False:
         os.system("g++ {0}.cpp -o {0} {1}".format(config.sourceFile,config.compileArgs))
+    print("Compile done.")
 
 # Generate hack data
 if config.skipGenerate==False:

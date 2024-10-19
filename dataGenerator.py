@@ -107,6 +107,10 @@ class Data:
                                 os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
                                 os.system("rename .\\wrongOutput\\{0} {1}{2}.out".format(freOutputFileName,self.config.dataFile,id))
                             break
+                else:
+                    if self.config.saveWrongOutput==True:
+                        os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
+                        os.system("rename .\\wrongOutput\\{0} {1}{2}.out".format(freOutputFileName,self.config.dataFile,id))
             else:
                 if ans==output:
                     result = 1
