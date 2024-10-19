@@ -1,1 +1,4 @@
 func_timeout==4.3.5
+colorful==0.5.6
+xeger==0.4.0
+cyaron==0.6.0
