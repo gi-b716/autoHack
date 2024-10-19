@@ -17,7 +17,10 @@ class Config:
     compileBeforeRun = False
     compileArgs = ""
     useFileIO = True
+    useSameFileName = True
     freFileName = "plus"
+    inputFileName = ""
+    outputFileName = ""
 
     # Debug
     skipGenerate = False
@@ -28,13 +31,18 @@ globalConfig = Config()
 class Data:
     def __init__(self, config:Config):
         self.config = config
-        self.customArgs = ""
 
     def getFileName(self, id):
         inputFileName = "{0}{1}.in".format(self.config.dataFile,str(id))
         ansFileName = "{0}{1}.ans".format(self.config.dataFile,str(id))
-        freInputFileName = "{0}.in".format(self.config.freFileName)
-        freOutputFileName = "{0}.out".format(self.config.freFileName)
+        freInputFileName = ""
+        freOutputFileName = ""
+        if self.config.useSameFileName==True:
+            freInputFileName = "{0}.in".format(self.config.freFileName)
+            freOutputFileName = "{0}.out".format(self.config.freFileName)
+        else:
+            freInputFileName = "{0}.in".format(self.config.inputFileName)
+            freOutputFileName = "{0}.out".format(self.config.outputFileName)
         return [inputFileName,ansFileName,freInputFileName,freOutputFileName]
 
     def generateData(self, id):
