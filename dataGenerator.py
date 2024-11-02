@@ -26,6 +26,9 @@ class Config:
     skipGenerate = False
     skipRun = False
 
+    # Infinite
+    wrongLimits = 1
+
 globalConfig = Config()
 
 class Data:
