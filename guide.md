@@ -33,7 +33,7 @@ inputFile.write()
 
 ### Line 15 - Line 18 (Program)
 
-`compileBeforeRun` : 是否由 AH 编译程序  
+`compileBeforeRun` : 是否由 AH 编译程序，**请保证你的环境变量包含 `g++`**  
 `compileArgs` : 编译参数，`-o` 由 AH 自动填写  
 `useFileIO` : 是否使用文件输入输出  
 
