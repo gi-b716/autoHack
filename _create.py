@@ -6,8 +6,11 @@ argvL = sys.argv
 argvLen = len(argvL)
 cwd = os.getcwd()
 
-os.chdir("{0}\\requirements".format(directoryPath))
-os.system("pip install -r requirements.txt")
+try:
+	import func_timeout
+except:
+	os.chdir("{0}\\requirements".format(directoryPath))
+	os.system("pip install -r requirements.txt")
 
 if argvLen == 1:
 	newCwd = "{0}\\Hack".format(cwd)
