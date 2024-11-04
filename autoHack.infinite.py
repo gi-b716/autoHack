@@ -7,6 +7,7 @@ import os
 config = dataGenerator.Config()
 data = dataGenerator.Data(config)
 
+globalCount = 0
 diffCount = 0
 
 # Init logger
@@ -37,14 +38,15 @@ os.system("md wrongOutput")
 logger.info("Cleaning wrong output history")
 
 while True:
+    globalCount += 1
     os.system("cls")
     refer = data.getFileName(diffCount)
-    print("Generating hack data.")
-    logger.info("Generating hack data.")
+    print("Generating hack data {0}".format(globalCount))
+    logger.info("Generating hack data {0}".format(globalCount))
     data.generateData(diffCount)
     os.system("cls")
-    print("Judging")
-    logger.info("Judging.")
+    print("Judging data {0}".format(globalCount))
+    logger.info("Judging data {0}".format(globalCount))
     result = data.runHacking(diffCount)
 
     if result[1]==True:
@@ -71,4 +73,7 @@ while True:
         os.system("cls")
 
     if diffCount == config.wrongLimits:
+        sys.exit()
+
+    if globalCount == config.numberOfSamples:
         sys.exit()
