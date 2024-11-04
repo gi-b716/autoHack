@@ -35,6 +35,8 @@ if config.compileBeforeRun==True:
 
 os.system("rmdir /s/q wrongOutput")
 os.system("md wrongOutput")
+os.system("rmdir /s/q hackData")
+os.system("md hackData")
 logger.info("Cleaning wrong output history")
 
 while True:
@@ -50,8 +52,8 @@ while True:
     result = data.runHacking(diffCount)
 
     if result[1]==True:
-        os.system("move .\\{0} .\\wrongOutput\\{0}".format(refer[0]))
-        os.system("move .\\{0} .\\wrongOutput\\{0}".format(refer[1]))
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
         print("Time Limit Exceeded!")
         logger.warning("Time Limit Exceeded! Exceed {0} ms".format(result[2]))
@@ -59,8 +61,8 @@ while True:
         diffCount += 1
 
     elif result[0]==0:
-        os.system("move .\\{0} .\\wrongOutput\\{0}".format(refer[0]))
-        os.system("move .\\{0} .\\wrongOutput\\{0}".format(refer[1]))
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
         print("Catch diff!")
         logger.warning("Catch diff!")
