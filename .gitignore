@@ -1,6 +1,5 @@
+*.md
 requirements/func_timeout-4.3.5-py3-none-any.whl
 requirements/colorful-0.5.6-py2.py3-none-any.whl
 requirements/cyaron-0.6.0-py3-none-any.whl
 requirements/xeger-0.4.0-py3-none-any.whl
-/Guide.md
-/Redevelopment Guidelines.md
