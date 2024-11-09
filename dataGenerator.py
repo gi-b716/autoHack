@@ -14,7 +14,7 @@ class Config:
 
     # Program
     compileBeforeRun = False
-    compileArgs = ""
+    compileCommands = "g++ $(name).cpp -o $(name)" # $(name) will be automatically replaced with the source program name
     useFileIO = False
 
     # File

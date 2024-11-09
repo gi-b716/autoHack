@@ -27,9 +27,9 @@ if config.compileBeforeRun==True:
     print("Compile program(s)")
     logger.info("Compile program(s)")
     if config.skipGenerate==False:
-        os.system("g++ {0}.cpp -o {0} {1}".format(config.stdFile,config.compileArgs))
+        os.system("{0}".format(config.compileCommands.replace("$(name)",config.stdFile)))
     if config.skipRun==False:
-        os.system("g++ {0}.cpp -o {0} {1}".format(config.sourceFile,config.compileArgs))
+        os.system("{0}".format(config.compileCommands.replace("$(name)",config.sourceFile)))
     print("Compile done.")
 
 # Generate hack data
