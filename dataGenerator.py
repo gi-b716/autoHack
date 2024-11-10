@@ -14,7 +14,9 @@ class Config:
 
     # Program
     compileBeforeRun = False
-    compileCommands = "g++ $(name).cpp -o $(name)" # $(name) will be automatically replaced with the source program name
+    programName = "$(name).exe"
+    compileCommands = "g++ $(name).cpp -o $(pname)" # $(name) will be automatically replaced with the source program name
+    runningCommands = ".\\$(pname)"
     useFileIO = False
 
     # File
@@ -55,9 +57,9 @@ class Data:
 
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
         if self.config.useFileIO==False:
-            os.system(".\\{0} < {1} > {2}".format(self.config.stdFile,freInputFileName,freOutputFileName))
+            os.system("{0} < {1} > {2}".format(self.config.runningCommands.replace("$(pname)",self.config.programName).replace("$(name)",self.config.stdFile),freInputFileName,freOutputFileName))
         else:
-            os.system(".\\{0}".format(self.config.stdFile))
+            os.system("{0}".format(self.config.runningCommands.replace("$(pname)",self.config.programName).replace("$(name)",self.config.stdFile)))
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("rename {0} {1}".format(freOutputFileName,ansFileName))
 
@@ -80,15 +82,15 @@ class Data:
 
         runCommand = ""
         if self.config.useFileIO==False:
-            runCommand = ".\\{0} < {1} > {2}".format(self.config.sourceFile,freInputFileName,freOutputFileName)
+            runCommand = "{0} < {1} > {2}".format(self.config.runningCommands.replace("$(pname)",self.config.programName).replace("$(name)",self.config.sourceFile),freInputFileName,freOutputFileName)
         else:
-            runCommand = ".\\{0}".format(self.config.sourceFile)
+            runCommand = "{0}".format(self.config.runningCommands.replace("$(pname)",self.config.programName).replace("$(name)",self.config.sourceFile))
 
         try:
             self.runCode(runCommand)
         except func_timeout.exceptions.FunctionTimedOut:
             timeOutTag = True
-            os.system("taskkill /F /IM {0}.exe".format(self.config.sourceFile))
+            os.system("taskkill /F /IM {0}".format(self.config.programName))
             os.system("cls")
 
         if timeOutTag==False:
