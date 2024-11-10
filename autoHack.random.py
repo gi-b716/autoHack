@@ -6,6 +6,7 @@ import os
 
 config = dataGenerator.Config()
 data = dataGenerator.Data(config)
+test = dataGenerator.Test()
 
 diffCount = 0
 
@@ -31,6 +32,10 @@ if config.compileBeforeRun==True:
     if config.skipRun==False:
         os.system("{0}".format(config.compileCommands.replace("$(name)",config.sourceFile)))
     print("Compile done.")
+
+test.previewHackData()
+time.sleep(config.previewHackDataTime)
+logger.info("Preview hack data.")
 
 # Generate hack data
 if config.skipGenerate==False:

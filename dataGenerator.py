@@ -13,6 +13,7 @@ class Config:
     waitTime = 3.0 # s
     ignoreSomeCharactersAtTheEnd = True
     saveWrongOutput = True
+    previewHackDataTime = 0.0 # s
 
     # Program
     compileBeforeRun = False
@@ -159,6 +160,23 @@ class Test:
 
         print("Start: {0}\nEnd: {1}\nError: {2}".format(startTime, endTime, endTime-startTime))
 
+    """Preview hack data"""
+    def previewHackData(self):
+        configObj = Config()
+        dataObj = Data(configObj)
+        dataObj.generateData(0)
+        refer = dataObj.getFileName(0)
+
+        print("Input:")
+        with open(refer[0],"r") as inputFile:
+            print("{0}".format(inputFile.read()))
+        print("\nAns:")
+        with open(refer[1],"r") as ansFile:
+            print("{0}".format(ansFile.read()))
+
+        os.system("del {0} /q".format(refer[0]))
+        os.system("del {0} /q".format(refer[1]))
+
 class GUI:
     def __init__(self):
         self.pythonRunningCommand = input("Please enter the command you used to run the Python file (leave it blank to auto-fill with \"python\"): ")
@@ -199,16 +217,23 @@ class GUI:
         sendBackInformation = input("""autoHack (GUI version) - Run test
 1. Run all tests
 2. Run TLEErrorDetection
+3. Run previewHackData
 Enter a number to execute and "q" to return to the main screen: """)
         print()
 
         if sendBackInformation == '1':
-            print("Test 1/1: TLEErrorDetection\n")
+            print("Test 1/2: TLEErrorDetection\n")
             testObject.TLEErrorDetection()
+            print("\nTest 2/2: previewHackData\n")
+            testObject.previewHackData()
             print()
         elif sendBackInformation == '2':
             print("Test: TLEErrorDetection\n")
             testObject.TLEErrorDetection()
+            print()
+        elif sendBackInformation == '3':
+            print("Test: previewHackData\n")
+            testObject.previewHackData()
             print()
         elif sendBackInformation == 'q':
             return

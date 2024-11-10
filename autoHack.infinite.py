@@ -6,6 +6,7 @@ import os
 
 config = dataGenerator.Config()
 data = dataGenerator.Data(config)
+test = dataGenerator.Test()
 
 globalCount = 0
 diffCount = 0
@@ -36,6 +37,10 @@ os.system("md wrongOutput")
 os.system("rmdir /s/q hackData")
 os.system("md hackData")
 logger.info("Cleaning wrong output history")
+
+test.previewHackData()
+time.sleep(config.previewHackDataTime)
+logger.info("Preview hack data.")
 
 while True:
     globalCount += 1
