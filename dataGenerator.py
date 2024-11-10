@@ -1,6 +1,7 @@
 import func_timeout
 import subprocess
 import random
+import time
 import os
 
 class Config:
@@ -30,8 +31,6 @@ class Config:
 
     # Infinite
     wrongLimits = 1
-
-globalConfig = Config()
 
 class Data:
     def __init__(self, config:Config):
@@ -63,7 +62,7 @@ class Data:
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("rename {0} {1}".format(freOutputFileName,ansFileName))
 
-    @func_timeout.func_set_timeout(globalConfig.timeLimits/1000)
+    @func_timeout.func_set_timeout(Config.timeLimits/1000)
     def runCode(self, runCommand):
         self.runCodeResult = subprocess.Popen("{0}".format(runCommand))
         self.runCodeResult.wait()
@@ -146,19 +145,99 @@ class Test:
 
     """Due to technical reasons, the time used by autoHack to detect TLE includes the time spent using function calls to evaluate the program. This test can help measure this error."""
     def TLEErrorDetection(self):
-        import time
         print("Writing in progress.")
         with open("{0}".format(self.testFileName),"w") as testFile:
             testFile.write("{0}".format(self.defaultContent))
+
         print("Compiling.")
         os.system("{0}".format(self.compileCommands))
+
         print("During testing.")
         startTime = time.time()
         subprocess.Popen("{0}".format(self.runningCommands))
         endTime = time.time()
+
         print("Start: {0}\nEnd: {1}\nError: {2}".format(startTime, endTime, endTime-startTime))
 
+class GUI:
+    def __init__(self):
+        self.pythonRunningCommand = input("Please enter the command you used to run the Python file (leave it blank to auto-fill with \"python\"): ")
+        if self.pythonRunningCommand == "":
+            self.pythonRunningCommand = "python"
+        os.system("echo off")
+        os.system("cls")
+        print("autoHack (GUI version) is launched.\n")
+
+    def createInstancePage(self):
+        if not os.path.exists("_create.py"):
+            print("autoHack is already running in an instance!\n")
+            return
+
+        directory = os.path.dirname(os.path.abspath(__file__))
+        instanceDirectory = input("Enter the instance storage directory: ")
+        print()
+        instanceName = input("Enter the instance name: ")
+        print()
+
+        os.chdir("{0}".format(instanceDirectory))
+        if instanceName == "":
+            os.system("{0} {1}".format(self.pythonRunningCommand,directory+"\\_create.py"))
+        else:
+            os.system("{0} {1} {2}".format(self.pythonRunningCommand,directory+"\\_create.py",instanceName))
+        os.chdir("{0}".format(directory))
+
+    def runningAutohack(self, mode):
+        directory = os.path.dirname(os.path.abspath(__file__))
+        if mode == "infinite":
+            os.system("{0} autoHack.infinite.py".format(self.pythonRunningCommand))
+        elif mode == "random":
+            os.system("{0} autoHack.random.py".format(self.pythonRunningCommand))
+
+    def testPage(self):
+        testObject = Test()
+
+        sendBackInformation = input("""autoHack (GUI version) - Run test
+1. Run all tests
+2. Run TLEErrorDetection
+Enter a number to execute and "q" to return to the main screen: """)
+        print()
+
+        if sendBackInformation == '1':
+            print("Test 1/1: TLEErrorDetection\n")
+            testObject.TLEErrorDetection()
+            print()
+        elif sendBackInformation == '2':
+            print("Test: TLEErrorDetection\n")
+            testObject.TLEErrorDetection()
+            print()
+        elif sendBackInformation == 'q':
+            return
+
+        self.testPage()
+
+    def mainPage(self):
+        sendBackInformation = input("""autoHack (GUI version)
+1. Create a new instance using _create.py
+2. Run autoHack.infinite.py
+3. Run autoHack.random.py
+4. Run test
+Enter a number to execute and "q" to exit: """)
+        print()
+
+        if sendBackInformation == '1':
+            self.createInstancePage()
+        elif sendBackInformation == '2':
+            self.runningAutohack("infinite")
+        elif sendBackInformation == '3':
+            self.runningAutohack("random")
+        elif sendBackInformation == '4':
+            self.testPage()
+        elif sendBackInformation == 'q':
+            return
+
+        self.mainPage()
+
+
 if __name__ == "__main__":
-    testObject = Test()
-    print("Test 1/1: TLEErrorDetection\n")
-    testObject.TLEErrorDetection()
+    guiObject = GUI()
+    guiObject.mainPage()
