@@ -1,4 +1,5 @@
 import func_timeout
+import subprocess
 import random
 import os
 
@@ -14,9 +15,8 @@ class Config:
 
     # Program
     compileBeforeRun = False
-    programName = "$(name).exe"
-    compileCommands = "g++ $(name).cpp -o $(pname)" # $(name) will be automatically replaced with the source program name
-    runningCommands = ".\\$(pname)"
+    compileCommands = "g++ $(name).cpp -o $(name)" # $(name) will be automatically replaced with the source program name
+    runningCommands = ".\\$(name)"
     useFileIO = False
 
     # File
@@ -57,15 +57,16 @@ class Data:
 
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
         if self.config.useFileIO==False:
-            os.system("{0} < {1} > {2}".format(self.config.runningCommands.replace("$(pname)",self.config.programName).replace("$(name)",self.config.stdFile),freInputFileName,freOutputFileName))
+            os.system("{0} < {1} > {2}".format(self.config.runningCommands.replace("$(name)",self.config.stdFile),freInputFileName,freOutputFileName))
         else:
-            os.system("{0}".format(self.config.runningCommands.replace("$(pname)",self.config.programName).replace("$(name)",self.config.stdFile)))
+            os.system("{0}".format(self.config.runningCommands.replace("$(name)",self.config.stdFile)))
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("rename {0} {1}".format(freOutputFileName,ansFileName))
 
     @func_timeout.func_set_timeout(globalConfig.timeLimits/1000)
     def runCode(self, runCommand):
-        os.system(runCommand)
+        self.runCodeResult = subprocess.Popen("{0}".format(runCommand))
+        self.runCodeResult.wait()
 
     def runHacking(self, id):
         inputFileName = self.getFileName(id)[0]
@@ -82,15 +83,15 @@ class Data:
 
         runCommand = ""
         if self.config.useFileIO==False:
-            runCommand = "{0} < {1} > {2}".format(self.config.runningCommands.replace("$(pname)",self.config.programName).replace("$(name)",self.config.sourceFile),freInputFileName,freOutputFileName)
+            runCommand = "{0} < {1} > {2}".format(self.config.runningCommands.replace("$(name)",self.config.sourceFile),freInputFileName,freOutputFileName)
         else:
-            runCommand = "{0}".format(self.config.runningCommands.replace("$(pname)",self.config.programName).replace("$(name)",self.config.sourceFile))
+            runCommand = "{0}".format(self.config.runningCommands.replace("$(name)",self.config.sourceFile))
 
         try:
             self.runCode(runCommand)
         except func_timeout.exceptions.FunctionTimedOut:
             timeOutTag = True
-            os.system("taskkill /F /IM {0}".format(self.config.programName))
+            os.system("taskkill /F /PID {0}".format(self.runCodeResult.pid))
             os.system("cls")
 
         if timeOutTag==False:
@@ -133,3 +134,31 @@ class Data:
         os.system("del {0} /q".format(freOutputFileName))
 
         return [result,timeOutTag,self.config.timeLimits,ans,output]
+
+class Test:
+    def __init__(self):
+        # TLEErrorDetection
+        self.testFileName = "TLEErrorDetection.cpp"
+        self.defaultContent = """int main(){
+}"""
+        self.compileCommands = "g++ TLEErrorDetection.cpp -o TLEErrorDetection"
+        self.runningCommands = ".\\TLEErrorDetection"
+
+    """Due to technical reasons, the time used by autoHack to detect TLE includes the time spent using function calls to evaluate the program. This test can help measure this error."""
+    def TLEErrorDetection(self):
+        import time
+        print("Writing in progress.")
+        with open("{0}".format(self.testFileName),"w") as testFile:
+            testFile.write("{0}".format(self.defaultContent))
+        print("Compiling.")
+        os.system("{0}".format(self.compileCommands))
+        print("During testing.")
+        startTime = time.time()
+        subprocess.Popen("{0}".format(self.runningCommands))
+        endTime = time.time()
+        print("Start: {0}\nEnd: {1}\nError: {2}".format(startTime, endTime, endTime-startTime))
+
+if __name__ == "__main__":
+    testObject = Test()
+    print("Test 1/1: TLEErrorDetection\n")
+    testObject.TLEErrorDetection()
