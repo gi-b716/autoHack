@@ -65,8 +65,8 @@ class Data:
         os.system("rename {0} {1}".format(freOutputFileName,ansFileName))
 
     @func_timeout.func_set_timeout(Config.timeLimits/1000)
-    def runCode(self, runCommand):
-        self.runCodeResult = subprocess.Popen("{0}".format(runCommand))
+    def runCode(self, runCommand, inputFilePipe, outputFilePipe):
+        self.runCodeResult = subprocess.Popen("{0}".format(runCommand),stdin=inputFilePipe,stdout=outputFilePipe)
         self.runCodeResult.wait()
 
     def runHacking(self, id):
@@ -82,18 +82,26 @@ class Data:
 
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
 
-        runCommand = ""
+        runCommand = "{0}".format(self.config.runningCommands.replace("$(name)",self.config.sourceFile))
         if self.config.useFileIO==False:
-            runCommand = "{0} < {1} > {2}".format(self.config.runningCommands.replace("$(name)",self.config.sourceFile),freInputFileName,freOutputFileName)
-        else:
-            runCommand = "{0}".format(self.config.runningCommands.replace("$(name)",self.config.sourceFile))
+            inputFilePipe = open("{0}".format(freInputFileName), "r")
+            outputFilePipe = open("{0}".format(freOutputFileName), "w")
+            try:
+                self.runCode(runCommand,inputFilePipe,outputFilePipe)
+            except func_timeout.exceptions.FunctionTimedOut:
+                timeOutTag = True
+                os.system("taskkill /F /PID {0}".format(self.runCodeResult.pid))
+                os.system("cls")
+            inputFilePipe.close()
+            outputFilePipe.close()
 
-        try:
-            self.runCode(runCommand)
-        except func_timeout.exceptions.FunctionTimedOut:
-            timeOutTag = True
-            os.system("taskkill /F /PID {0}".format(self.runCodeResult.pid))
-            os.system("cls")
+        else:
+            try:
+                self.runCode(runCommand,None,None)
+            except func_timeout.exceptions.FunctionTimedOut:
+                timeOutTag = True
+                os.system("taskkill /F /PID {0}".format(self.runCodeResult.pid))
+                os.system("cls")
 
         if timeOutTag==False:
             ansFile = open("{0}".format(ansFileName), "r")
@@ -184,6 +192,7 @@ class Test:
 
 class GUI:
     def __init__(self):
+        self.configObj = Config()
         self.pythonRunningCommand = input("Please enter the command you used to run the Python file (leave it blank to auto-fill with \"python\"): ")
         if self.pythonRunningCommand == "":
             self.pythonRunningCommand = "python"
@@ -233,6 +242,8 @@ Enter a number to execute: """)
             print("Test 1/2: TLEErrorDetection\n")
             testObject.TLEErrorDetection()
             print("\nTest 2/2: previewHackData\n")
+            if self.configObj.compileBeforeRun == True:
+                os.system("{0}".format(self.configObj.compileCommands.replace("$(name)",self.configObj.stdFile)))
             testObject.previewHackData()
             print()
         elif sendBackInformation == '2':
@@ -241,6 +252,8 @@ Enter a number to execute: """)
             print()
         elif sendBackInformation == '3':
             print("Test: previewHackData\n")
+            if self.configObj.compileBeforeRun == True:
+                os.system("{0}".format(self.configObj.compileCommands.replace("$(name)",self.configObj.stdFile)))
             testObject.previewHackData()
             print()
         elif sendBackInformation == 'b':
