@@ -144,6 +144,7 @@ class Test:
 }"""
         self.compileCommands = "g++ TLEErrorDetection.cpp -o TLEErrorDetection"
         self.runningCommands = ".\\TLEErrorDetection"
+        self.deleteCacheCommands = "del TLEErrorDetection.exe /q"
 
     """Due to technical reasons, the time used by autoHack to detect TLE includes the time spent using function calls to evaluate the program. This test can help measure this error."""
     def TLEErrorDetection(self):
@@ -160,6 +161,9 @@ class Test:
         endTime = time.time()
 
         print("Start: {0}\nEnd: {1}\nError: {2}".format(startTime, endTime, endTime-startTime))
+
+        os.system("del {0} /q".format(self.testFileName))
+        os.system("{0}".format(self.deleteCacheCommands))
 
     """Preview hack data"""
     def previewHackData(self):
