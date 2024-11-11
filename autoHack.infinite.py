@@ -38,7 +38,7 @@ os.system("rmdir /s/q hackData")
 os.system("md hackData")
 logger.info("Cleaning wrong output history")
 
-if config.previewHackDataTime > 0:
+if config.previewHackDataTime > 0 and not config.skipGenerate:
     test.previewHackData()
     time.sleep(config.previewHackDataTime)
     logger.info("Preview hack data.")

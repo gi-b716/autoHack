@@ -33,7 +33,7 @@ if config.compileBeforeRun==True:
         os.system("{0}".format(config.compileCommands.replace("$(name)",config.sourceFile)))
     print("Compile done.")
 
-if config.previewHackDataTime > 0:
+if config.previewHackDataTime > 0 and not config.skipGenerate:
     test.previewHackData()
     time.sleep(config.previewHackDataTime)
     logger.info("Preview hack data.")
