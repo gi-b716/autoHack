@@ -2,6 +2,7 @@ import func_timeout
 import subprocess
 import random
 import time
+import sys
 import os
 
 class Config:
@@ -218,7 +219,10 @@ class GUI:
 1. Run all tests
 2. Run TLEErrorDetection
 3. Run previewHackData
-Enter a number to execute and "q" to return to the main screen: """)
+
+b. Return to the main screen
+q. Exit
+Enter a number to execute: """)
         print()
 
         if sendBackInformation == '1':
@@ -235,8 +239,10 @@ Enter a number to execute and "q" to return to the main screen: """)
             print("Test: previewHackData\n")
             testObject.previewHackData()
             print()
-        elif sendBackInformation == 'q':
+        elif sendBackInformation == 'b':
             return
+        elif sendBackInformation == 'q':
+            sys.exit(0)
 
         self.testPage()
 
@@ -246,7 +252,9 @@ Enter a number to execute and "q" to return to the main screen: """)
 2. Run autoHack.infinite.py
 3. Run autoHack.random.py
 4. Run test
-Enter a number to execute and "q" to exit: """)
+
+q. Exit
+Enter a number to execute: """)
         print()
 
         if sendBackInformation == '1':
@@ -258,7 +266,7 @@ Enter a number to execute and "q" to exit: """)
         elif sendBackInformation == '4':
             self.testPage()
         elif sendBackInformation == 'q':
-            return
+            sys.exit(0)
 
         self.mainPage()
 

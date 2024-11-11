@@ -38,9 +38,10 @@ os.system("rmdir /s/q hackData")
 os.system("md hackData")
 logger.info("Cleaning wrong output history")
 
-test.previewHackData()
-time.sleep(config.previewHackDataTime)
-logger.info("Preview hack data.")
+if config.previewHackDataTime > 0:
+    test.previewHackData()
+    time.sleep(config.previewHackDataTime)
+    logger.info("Preview hack data.")
 
 while True:
     globalCount += 1
