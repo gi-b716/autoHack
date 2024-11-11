@@ -10,14 +10,14 @@ class Config:
     sourceFile = "source"
     stdFile = "std"
     timeLimits = 1000 # ms
-    exitWhenThereIsADiscrepancy = True
     waitTime = 3.0 # s
     ignoreSomeCharactersAtTheEnd = True
     saveWrongOutput = True
     previewHackDataTime = 0.0 # s
+    wrongLimits = -1
 
     # Program
-    compileBeforeRun = False
+    compileBeforeRun = True
     compileCommands = "g++ $(name).cpp -o $(name)" # $(name) will be automatically replaced with the source program name
     runningCommands = ".\\$(name)"
     useFileIO = False
@@ -30,9 +30,6 @@ class Config:
     # Debug
     skipGenerate = False
     skipRun = False
-
-    # Infinite
-    wrongLimits = 1
 
 class Data:
     def __init__(self, config:Config):

@@ -77,19 +77,17 @@ if config.skipRun==False:
         if result[1]==True:
             print("Time Limit Exceeded on data {0}!".format(samplesId))
             logger.warning("Time Limit Exceeded! On {0} and {1}, exceed {2} ms".format(refer[0],refer[1],result[2]))
-            if config.exitWhenThereIsADiscrepancy==False:
-                time.sleep(config.waitTime)
-                diffCount += 1
+            time.sleep(config.waitTime)
+            diffCount += 1
 
         elif result[0]==0:
             print("Catch diff on data {0}!\nAns:\n{1}\nOutput:\n{2}\n".format(samplesId,result[3],result[4]))
             logger.warning("Catch diff! See {0} and {1}".format(refer[0],refer[1]))
-            if config.exitWhenThereIsADiscrepancy==False:
-                time.sleep(config.waitTime)
-                diffCount += 1
+            time.sleep(config.waitTime)
+            diffCount += 1
 
-        if result[0]==0 and config.exitWhenThereIsADiscrepancy:
-            sys.exit()
+        if diffCount == config.wrongLimits:
+            sys.exit(0)
     logger.info("Catch {0} diff".format(diffCount))
 else:
     logger.info("Skip judge")
