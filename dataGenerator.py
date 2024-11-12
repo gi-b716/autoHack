@@ -1,4 +1,3 @@
-import func_timeout
 import subprocess
 import random
 import time
@@ -61,11 +60,6 @@ class Data:
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("rename {0} {1}".format(freOutputFileName,ansFileName))
 
-    @func_timeout.func_set_timeout(Config.timeLimits/1000)
-    def runCode(self, runCommand, inputFilePipe, outputFilePipe):
-        self.runCodeResult = subprocess.Popen("{0}".format(runCommand),stdin=inputFilePipe,stdout=outputFilePipe)
-        self.runCodeResult.wait()
-
     def runHacking(self, id):
         inputFileName = self.getFileName(id)[0]
         ansFileName = self.getFileName(id)[1]
@@ -84,21 +78,17 @@ class Data:
             inputFilePipe = open("{0}".format(freInputFileName), "r")
             outputFilePipe = open("{0}".format(freOutputFileName), "w")
             try:
-                self.runCode(runCommand,inputFilePipe,outputFilePipe)
-            except func_timeout.exceptions.FunctionTimedOut:
+                self.runCodeResult = subprocess.run("{0}".format(runCommand),stdin=inputFilePipe,stdout=outputFilePipe,timeout=self.config.timeLimits/1000)
+            except subprocess.TimeoutExpired:
                 timeOutTag = True
-                os.system("taskkill /F /PID {0}".format(self.runCodeResult.pid))
-                os.system("cls")
             inputFilePipe.close()
             outputFilePipe.close()
 
         else:
             try:
-                self.runCode(runCommand,None,None)
-            except func_timeout.exceptions.FunctionTimedOut:
+                self.runCodeResult = subprocess.run("{0}".format(runCommand),timeout=self.config.timeLimits/1000)
+            except subprocess.TimeoutExpired:
                 timeOutTag = True
-                os.system("taskkill /F /PID {0}".format(self.runCodeResult.pid))
-                os.system("cls")
 
         if timeOutTag==False:
             ansFile = open("{0}".format(ansFileName), "r")
