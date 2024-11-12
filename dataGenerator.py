@@ -138,32 +138,7 @@ class Data:
 
 class Test:
     def __init__(self):
-        # TLEErrorDetection
-        self.testFileName = "TLEErrorDetection.cpp"
-        self.defaultContent = """int main(){
-}"""
-        self.compileCommands = "g++ TLEErrorDetection.cpp -o TLEErrorDetection"
-        self.runningCommands = ".\\TLEErrorDetection"
-        self.deleteCacheCommands = "del TLEErrorDetection.exe /q"
-
-    """Due to technical reasons, the time used by autoHack to detect TLE includes the time spent using function calls to evaluate the program. This test can help measure this error."""
-    def TLEErrorDetection(self):
-        print("Writing in progress.")
-        with open("{0}".format(self.testFileName),"w") as testFile:
-            testFile.write("{0}".format(self.defaultContent))
-
-        print("Compiling.")
-        os.system("{0}".format(self.compileCommands))
-
-        print("During testing.")
-        startTime = time.time()
-        subprocess.Popen("{0}".format(self.runningCommands))
-        endTime = time.time()
-
-        print("Start: {0}\nEnd: {1}\nError: {2}".format(startTime, endTime, endTime-startTime))
-
-        os.system("del {0} /q".format(self.testFileName))
-        os.system("{0}".format(self.deleteCacheCommands))
+        pass
 
     """Preview hack data"""
     def previewHackData(self):
@@ -222,8 +197,7 @@ class GUI:
 
         sendBackInformation = input("""autoHack (GUI version) - Run test
 1. Run all tests
-2. Run TLEErrorDetection
-3. Run previewHackData
+2. Run previewHackData
 
 b. Return to the main screen
 q. Exit
@@ -231,18 +205,12 @@ Enter a number to execute: """)
         print()
 
         if sendBackInformation == '1':
-            print("Test 1/2: TLEErrorDetection\n")
-            testObject.TLEErrorDetection()
-            print("\nTest 2/2: previewHackData\n")
+            print("Test 1/1: previewHackData\n")
             if self.configObj.compileBeforeRun == True:
                 os.system("{0}".format(self.configObj.compileCommands.replace("$(name)",self.configObj.stdFile)))
             testObject.previewHackData()
             print()
         elif sendBackInformation == '2':
-            print("Test: TLEErrorDetection\n")
-            testObject.TLEErrorDetection()
-            print()
-        elif sendBackInformation == '3':
             print("Test: previewHackData\n")
             if self.configObj.compileBeforeRun == True:
                 os.system("{0}".format(self.configObj.compileCommands.replace("$(name)",self.configObj.stdFile)))
