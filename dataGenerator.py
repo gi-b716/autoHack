@@ -30,6 +30,16 @@ class Config:
     skipGenerate = False
     skipRun = False
 
+def _subprocess_run(*popenargs, timeout=None, **kwargs):
+    with subprocess.Popen(*popenargs, **kwargs) as process:
+        try:
+            process.communicate(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            raise
+        retcode = process.poll()
+    return retcode
+
 class Data:
     def __init__(self, config:Config):
         self.config = config
@@ -79,13 +89,13 @@ class Data:
             inputFilePipe = open("{0}".format(freInputFileName), "r")
             outputFilePipe = open("{0}".format(freOutputFileName), "w")
             try:
-                self.runCodeResult = subprocess.run("{0}".format(runCommand),stdin=inputFilePipe,stdout=outputFilePipe,timeout=self.config.timeLimits/1000)
+                self.runCodeResult = _subprocess_run("{0}".format(runCommand),stdin=inputFilePipe,stdout=outputFilePipe,timeout=self.config.timeLimits/1000)
             except subprocess.TimeoutExpired:
                 timeOutTag = True
             inputFilePipe.close()
             outputFilePipe.close()
             if not timeOutTag:
-                exitCode = self.runCodeResult.returncode
+                exitCode = self.runCodeResult
 
         else:
             try:
@@ -93,7 +103,7 @@ class Data:
             except subprocess.TimeoutExpired:
                 timeOutTag = True
             if not timeOutTag:
-                exitCode = self.runCodeResult.returncode
+                exitCode = self.runCodeResult
 
         if timeOutTag==False and exitCode==0:
             ansFile = open("{0}".format(ansFileName), "r")
