@@ -80,6 +80,12 @@ if config.skipRun==False:
             time.sleep(config.waitTime)
             diffCount += 1
 
+        elif result[5]!=0:
+            print("Runtime Error! Exit code: {0}".format(result[5]))
+            logger.warning("Runtime Error! Exit code: {0}".format(result[5]))
+            time.sleep(config.waitTime)
+            diffCount += 1
+
         elif result[0]==0:
             print("Catch diff on data {0}!\nAns:\n{1}\nOutput:\n{2}\n".format(samplesId,result[3],result[4]))
             logger.warning("Catch diff! See {0} and {1}".format(refer[0],refer[1]))

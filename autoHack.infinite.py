@@ -64,6 +64,12 @@ while True:
         time.sleep(config.waitTime)
         diffCount += 1
 
+    elif result[5]!=0:
+            print("Runtime Error! Exit code: {0}".format(result[5]))
+            logger.warning("Runtime Error! Exit code: {0}".format(result[5]))
+            time.sleep(config.waitTime)
+            diffCount += 1
+
     elif result[0]==0:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))

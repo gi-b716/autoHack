@@ -67,6 +67,7 @@ class Data:
         freOutputFileName = self.getFileName(id)[3]
 
         timeOutTag = False
+        exitCode = 0
         result = 0
         ans = None
         output = None
@@ -83,14 +84,18 @@ class Data:
                 timeOutTag = True
             inputFilePipe.close()
             outputFilePipe.close()
+            if not timeOutTag:
+                exitCode = self.runCodeResult.returncode
 
         else:
             try:
                 self.runCodeResult = subprocess.run("{0}".format(runCommand),timeout=self.config.timeLimits/1000)
             except subprocess.TimeoutExpired:
                 timeOutTag = True
+            if not timeOutTag:
+                exitCode = self.runCodeResult.returncode
 
-        if timeOutTag==False:
+        if timeOutTag==False and exitCode==0:
             ansFile = open("{0}".format(ansFileName), "r")
             outputFile = open("{0}".format(freOutputFileName), "r")
 
@@ -129,7 +134,7 @@ class Data:
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("del {0} /q".format(freOutputFileName))
 
-        return [result,timeOutTag,self.config.timeLimits,ans,output]
+        return [result,timeOutTag,self.config.timeLimits,ans,output,exitCode]
 
 class Test:
     def __init__(self):
