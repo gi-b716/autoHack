@@ -86,6 +86,12 @@ if config.skipRun==False:
             time.sleep(config.waitTime)
             diffCount += 1
 
+        elif result[6]==True:
+            print("Memory Limit Exceeded on data {0}!".format(samplesId))
+            logger.warning("Memory Limit Exceeded! On {0} and {1}, exceed {2} MB".format(refer[0],refer[1],result[7]))
+            time.sleep(config.waitTime)
+            diffCount += 1
+
         elif result[0]==0:
             print("Catch diff on data {0}!\nAns:\n{1}\nOutput:\n{2}\n".format(samplesId,result[3],result[4]))
             logger.warning("Catch diff! See {0} and {1}".format(refer[0],refer[1]))

@@ -65,10 +65,22 @@ while True:
         diffCount += 1
 
     elif result[5]!=0:
-            print("Runtime Error! Exit code: {0}".format(result[5]))
-            logger.warning("Runtime Error! Exit code: {0}".format(result[5]))
-            time.sleep(config.waitTime)
-            diffCount += 1
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
+        os.system("cls")
+        print("Runtime Error! Exit code: {0}".format(result[5]))
+        logger.warning("Runtime Error! Exit code: {0}".format(result[5]))
+        time.sleep(config.waitTime)
+        diffCount += 1
+
+    elif result[6]==True:
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
+        os.system("cls")
+        print("Memory Limit Exceeded!")
+        logger.warning("Memory Limit Exceeded! Exceed {0} MB".format(result[7]))
+        time.sleep(config.waitTime)
+        diffCount += 1
 
     elif result[0]==0:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))

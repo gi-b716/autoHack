@@ -1,6 +1,8 @@
+import multiprocessing
 import subprocess
-import random
 import time
+import psutil
+import random
 import sys
 import os
 
@@ -9,6 +11,7 @@ class Config:
     sourceFile = "source"
     stdFile = "std"
     timeLimits = 1000 # ms
+    memoryLimits = 512 # MB
     waitTime = 3.0 # s
     ignoreSomeCharactersAtTheEnd = True
     saveWrongOutput = True
@@ -30,15 +33,37 @@ class Config:
     skipGenerate = False
     skipRun = False
 
-def _subprocess_run(*popenargs, timeout=None, **kwargs):
+_monitorStatus = -1
+def timeMonitor(process, timeout):
+    global _monitorStatus
+    try:
+        process.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        _monitorStatus = 1
+        return
+    _monitorStatus = 0
+
+def _subprocess_run(*popenargs, timeout=None, memoryLimits, **kwargs):
+    global _monitorStatus
+    memoryErrorTag = False
     with subprocess.Popen(*popenargs, **kwargs) as process:
-        try:
-            process.communicate(timeout=timeout)
-        except subprocess.TimeoutExpired:
-            process.kill()
-            raise
+        psutilProcess = psutil.Process(process.pid)
+        monitorThread = multiprocessing.Process(target=timeMonitor, args=[process.pid])
+        monitorThread.start()
+        while monitorThread.is_alive():
+            if psutilProcess.memory_info().vms > memoryLimits:
+                monitorThread.terminate()
+                memoryErrorTag = True
+        # try:
+        #     process.communicate(timeout=timeout)
+        # except subprocess.TimeoutExpired:
+        #     process.kill()
+        #     raise
+        if _monitorStatus == 1 and timeout != None:
+            raise subprocess.TimeoutExpired(*popenargs, timeout=timeout)
         retcode = process.poll()
-    return retcode
+    return (retcode,memoryErrorTag)
 
 class Data:
     def __init__(self, config:Config):
@@ -77,6 +102,7 @@ class Data:
         freOutputFileName = self.getFileName(id)[3]
 
         timeOutTag = False
+        memoryOutTag = False
         exitCode = 0
         result = 0
         ans = None
@@ -89,23 +115,25 @@ class Data:
             inputFilePipe = open("{0}".format(freInputFileName), "r")
             outputFilePipe = open("{0}".format(freOutputFileName), "w")
             try:
-                self.runCodeResult = _subprocess_run("{0}".format(runCommand),stdin=inputFilePipe,stdout=outputFilePipe,timeout=self.config.timeLimits/1000)
+                self.runCodeResult = _subprocess_run("{0}".format(runCommand),stdin=inputFilePipe,stdout=outputFilePipe,timeout=self.config.timeLimits/1000,memoryLimits=self.config.memoryLimits*1024)
             except subprocess.TimeoutExpired:
                 timeOutTag = True
             inputFilePipe.close()
             outputFilePipe.close()
             if not timeOutTag:
-                exitCode = self.runCodeResult
+                exitCode = self.runCodeResult[0]
+                memoryOutTag = self.runCodeResult[1]
 
         else:
             try:
-                self.runCodeResult = subprocess.run("{0}".format(runCommand),timeout=self.config.timeLimits/1000)
+                self.runCodeResult = _subprocess_run("{0}".format(runCommand),timeout=self.config.timeLimits/1000,memoryLimits=self.config.memoryLimits*1024)
             except subprocess.TimeoutExpired:
                 timeOutTag = True
             if not timeOutTag:
-                exitCode = self.runCodeResult
+                exitCode = self.runCodeResult[0]
+                memoryOutTag = self.runCodeResult[1]
 
-        if timeOutTag==False and exitCode==0:
+        if timeOutTag==False and exitCode==0 and memoryOutTag==False:
             ansFile = open("{0}".format(ansFileName), "r")
             outputFile = open("{0}".format(freOutputFileName), "r")
 
@@ -144,7 +172,7 @@ class Data:
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("del {0} /q".format(freOutputFileName))
 
-        return [result,timeOutTag,self.config.timeLimits,ans,output,exitCode]
+        return [result,timeOutTag,self.config.timeLimits,ans,output,exitCode,memoryOutTag,self.config.memoryLimits]
 
 class Test:
     def __init__(self):
