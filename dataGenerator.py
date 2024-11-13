@@ -62,7 +62,9 @@ def _subprocess_run(*popenargs, timeout=None, memoryLimits, **kwargs):
         #     raise
         if _monitorStatus == 1 and timeout != None:
             raise subprocess.TimeoutExpired(*popenargs, timeout=timeout)
-        retcode = process.poll()
+        retcode = 0
+        if _monitorStatus == 0 and memoryErrorTag == False:
+            retcode = process.poll()
     return (retcode,memoryErrorTag)
 
 class Data:
