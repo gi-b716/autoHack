@@ -49,7 +49,7 @@ def _subprocess_run(*popenargs, timeout=None, memoryLimits, **kwargs):
     memoryErrorTag = False
     with subprocess.Popen(*popenargs, **kwargs) as process:
         psutilProcess = psutil.Process(process.pid)
-        monitorThread = multiprocessing.Process(target=timeMonitor, args=[process.pid])
+        monitorThread = multiprocessing.Process(target=timeMonitor, args=[process, timeout])
         monitorThread.start()
         while monitorThread.is_alive():
             if psutilProcess.memory_info().vms > memoryLimits:
