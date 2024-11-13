@@ -1,6 +1,5 @@
 import multiprocessing
 import subprocess
-import time
 import psutil
 import random
 import sys
@@ -33,39 +32,28 @@ class Config:
     skipGenerate = False
     skipRun = False
 
-_monitorStatus = -1
-def timeMonitor(process, timeout):
-    global _monitorStatus
-    try:
-        process.communicate(timeout=timeout)
-    except subprocess.TimeoutExpired:
-        process.kill()
-        _monitorStatus = 1
-        return
-    _monitorStatus = 0
+# psutilProcess.memory_info().vms
+class Utils:
+    class returnObject:
+        def __init__(self, retcode, timeOutTag, memoryOutTag):
+            self.retcode = retcode
+            self.timeOutTag = timeOutTag
+            self.memoryOut = memoryOutTag
 
-def _subprocess_run(*popenargs, timeout=None, memoryLimits, **kwargs):
-    global _monitorStatus
-    memoryErrorTag = False
-    with subprocess.Popen(*popenargs, **kwargs) as process:
-        psutilProcess = psutil.Process(process.pid)
-        monitorThread = multiprocessing.Process(target=timeMonitor, args=[process, timeout])
-        monitorThread.start()
-        while monitorThread.is_alive():
-            if psutilProcess.memory_info().vms > memoryLimits:
-                monitorThread.terminate()
-                memoryErrorTag = True
-        # try:
-        #     process.communicate(timeout=timeout)
-        # except subprocess.TimeoutExpired:
-        #     process.kill()
-        #     raise
-        if _monitorStatus == 1 and timeout != None:
-            raise subprocess.TimeoutExpired(*popenargs, timeout=timeout)
-        retcode = 0
-        if _monitorStatus == 0 and memoryErrorTag == False:
+    def run(self, *popenargs, timeout=None, memoryLimits, **kwargs):
+        with subprocess.Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(None, timeout=timeout)
+            except subprocess.TimeoutExpired as exc:
+                process.kill()
+                raise
+            except:
+                process.kill()
+                raise
             retcode = process.poll()
-    return (retcode,memoryErrorTag)
+        return retcode
+        # return (retcode, memoryOutTag)
+
 
 class Data:
     def __init__(self, config:Config):
@@ -112,28 +100,29 @@ class Data:
 
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
 
+        utilsObject = Utils()
         runCommand = "{0}".format(self.config.runningCommands.replace("$(name)",self.config.sourceFile))
         if self.config.useFileIO==False:
             inputFilePipe = open("{0}".format(freInputFileName), "r")
             outputFilePipe = open("{0}".format(freOutputFileName), "w")
             try:
-                self.runCodeResult = _subprocess_run("{0}".format(runCommand),stdin=inputFilePipe,stdout=outputFilePipe,timeout=self.config.timeLimits/1000,memoryLimits=self.config.memoryLimits*1024)
+                self.runCodeResult = utilsObject.run("{0}".format(runCommand),stdin=inputFilePipe,stdout=outputFilePipe,timeout=self.config.timeLimits/1000,memoryLimits=self.config.memoryLimits*1024)
             except subprocess.TimeoutExpired:
                 timeOutTag = True
             inputFilePipe.close()
             outputFilePipe.close()
             if not timeOutTag:
-                exitCode = self.runCodeResult[0]
-                memoryOutTag = self.runCodeResult[1]
+                exitCode = self.runCodeResult
+                # memoryOutTag = self.runCodeResult[1]
 
         else:
             try:
-                self.runCodeResult = _subprocess_run("{0}".format(runCommand),timeout=self.config.timeLimits/1000,memoryLimits=self.config.memoryLimits*1024)
+                self.runCodeResult = utilsObject.run("{0}".format(runCommand),timeout=self.config.timeLimits/1000,memoryLimits=self.config.memoryLimits*1024)
             except subprocess.TimeoutExpired:
                 timeOutTag = True
             if not timeOutTag:
-                exitCode = self.runCodeResult[0]
-                memoryOutTag = self.runCodeResult[1]
+                exitCode = self.runCodeResult
+                # memoryOutTag = self.runCodeResult[1]
 
         if timeOutTag==False and exitCode==0 and memoryOutTag==False:
             ansFile = open("{0}".format(ansFileName), "r")
