@@ -195,9 +195,8 @@ class Test:
 class GUI:
     def __init__(self):
         self.configObj = Config()
-        self.pythonRunningCommand = input("Please enter the command you used to run the Python file (leave it blank to auto-fill with \"python\"): ")
-        if self.pythonRunningCommand == "":
-            self.pythonRunningCommand = "python"
+        # self.pythonRunningCommand = input("Please enter the command you used to run the Python file (leave it blank to auto-fill with \"python\"): ")
+        self.pythonRunningCommand = "python"
         os.system("echo off")
         os.system("cls")
         print("autoHack (GUI version) is launched.\n")

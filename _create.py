@@ -6,6 +6,11 @@ argvL = sys.argv
 argvLen = len(argvL)
 cwd = os.getcwd()
 
+try:
+	import psutil
+except ImportError:
+	os.system("pip install psutil")
+
 if argvLen == 1:
 	newCwd = "{0}\\Hack".format(cwd)
 	os.chdir("{0}".format(cwd))
