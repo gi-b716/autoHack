@@ -1,5 +1,5 @@
-import multiprocessing
 import subprocess
+import threading
 import psutil
 import random
 import sys
@@ -10,7 +10,7 @@ class Config:
     sourceFile = "source"
     stdFile = "std"
     timeLimits = 1000 # ms
-    memoryLimits = 512 # MB
+    memoryLimits = 1024 # MB
     waitTime = 3.0 # s
     ignoreSomeCharactersAtTheEnd = True
     saveWrongOutput = True
@@ -32,18 +32,24 @@ class Config:
     skipGenerate = False
     skipRun = False
 
-# psutilProcess.memory_info().vms
 class Utils:
-    class returnObject:
-        def __init__(self, retcode, timeOutTag, memoryOutTag):
-            self.retcode = retcode
-            self.timeOutTag = timeOutTag
-            self.memoryOut = memoryOutTag
+    def __init__(self):
+        self.memoryOut = False
+
+    def memoryMonitor(self, pid, memoryLimits):
+        psutilProcess = psutil.Process(pid)
+        while True:
+            if psutilProcess.memory_info().vms > memoryLimits:
+                self.memoryOut = True
+                os.system("taskkill /F /PID {0}".format(pid))
+                return
 
     def run(self, *popenargs, timeout=None, memoryLimits, **kwargs):
         with subprocess.Popen(*popenargs, **kwargs) as process:
+            monitor = threading.Thread(target=self.memoryMonitor, args=(process.pid, memoryLimits, ))
+            monitor.start()
             try:
-                stdout, stderr = process.communicate(None, timeout=timeout)
+                process.communicate(None, timeout=timeout)
             except subprocess.TimeoutExpired as exc:
                 process.kill()
                 raise
@@ -51,9 +57,9 @@ class Utils:
                 process.kill()
                 raise
             retcode = process.poll()
+        if self.memoryOut == True:
+            retcode = 0
         return retcode
-        # return (retcode, memoryOutTag)
-
 
 class Data:
     def __init__(self, config:Config):
@@ -113,7 +119,7 @@ class Data:
             outputFilePipe.close()
             if not timeOutTag:
                 exitCode = self.runCodeResult
-                # memoryOutTag = self.runCodeResult[1]
+                memoryOutTag = utilsObject.memoryOut
 
         else:
             try:
@@ -122,7 +128,7 @@ class Data:
                 timeOutTag = True
             if not timeOutTag:
                 exitCode = self.runCodeResult
-                # memoryOutTag = self.runCodeResult[1]
+                memoryOutTag = utilsObject.memoryOut
 
         if timeOutTag==False and exitCode==0 and memoryOutTag==False:
             ansFile = open("{0}".format(ansFileName), "r")
