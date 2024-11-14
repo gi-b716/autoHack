@@ -39,9 +39,12 @@ class Utils:
     def memoryMonitor(self, pid, memoryLimits):
         psutilProcess = psutil.Process(pid)
         while True:
-            if psutilProcess.memory_info().vms > memoryLimits:
-                self.memoryOut = True
-                os.system("taskkill /F /PID {0}".format(pid))
+            try:
+                if psutilProcess.memory_info().vms > memoryLimits:
+                    self.memoryOut = True
+                    os.system("taskkill /F /PID {0}".format(pid))
+                    return
+            except:
                 return
 
     def run(self, *popenargs, timeout=None, memoryLimits, **kwargs):
@@ -112,7 +115,7 @@ class Data:
             inputFilePipe = open("{0}".format(freInputFileName), "r")
             outputFilePipe = open("{0}".format(freOutputFileName), "w")
             try:
-                self.runCodeResult = utilsObject.run("{0}".format(runCommand),stdin=inputFilePipe,stdout=outputFilePipe,timeout=self.config.timeLimits/1000,memoryLimits=self.config.memoryLimits*1024)
+                self.runCodeResult = utilsObject.run("{0}".format(runCommand),stdin=inputFilePipe,stdout=outputFilePipe,timeout=self.config.timeLimits/1000,memoryLimits=self.config.memoryLimits*1024*1024)
             except subprocess.TimeoutExpired:
                 timeOutTag = True
             inputFilePipe.close()
@@ -123,7 +126,7 @@ class Data:
 
         else:
             try:
-                self.runCodeResult = utilsObject.run("{0}".format(runCommand),timeout=self.config.timeLimits/1000,memoryLimits=self.config.memoryLimits*1024)
+                self.runCodeResult = utilsObject.run("{0}".format(runCommand),timeout=self.config.timeLimits/1000,memoryLimits=self.config.memoryLimits*1024*1024)
             except subprocess.TimeoutExpired:
                 timeOutTag = True
             if not timeOutTag:
