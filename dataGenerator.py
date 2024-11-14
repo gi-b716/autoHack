@@ -284,6 +284,9 @@ Enter a number to execute: """)
 
         self.mainPage()
 
+class Meta:
+    _version = "4.1.5"
+
 
 if __name__ == "__main__":
     guiObject = GUI()
