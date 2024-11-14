@@ -3,7 +3,8 @@ import zipfile
 import sys
 import os
 
-mirror = "https://autoHack.netlify.app/"
+# mirror = "https://autoHack.netlify.app/"
+mirror = "https://gi-b716.github.io/autoHack/"
 
 lasted = requests.get("{0}/LASTED".format(mirror))
 
