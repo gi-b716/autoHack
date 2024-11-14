@@ -6,7 +6,7 @@ import os
 # mirror = "https://autoHack.netlify.app/"
 mirror = "https://gi-b716.github.io/autoHack/"
 
-lasted = requests.get("{0}/LASTED".format(mirror))
+lasted = requests.get("{0}/LASTED".format(mirror)).content
 
 if os.path.exists("dataGenerator.py"):
 	import dataGenerator
