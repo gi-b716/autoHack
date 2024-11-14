@@ -223,7 +223,6 @@ class GUI:
         os.chdir("{0}".format(directory))
 
     def runningAutohack(self, mode):
-        directory = os.path.dirname(os.path.abspath(__file__))
         if mode == "infinite":
             os.system("{0} autoHack.infinite.py".format(self.pythonRunningCommand))
         elif mode == "random":
