@@ -1,10 +1,23 @@
-import requests
 import zipfile
 import sys
 import os
 
-mirror = "https://autohack.netlify.app/"
-# mirror = "https://gi-b716.github.io/autoHack/"
+try:
+	import requests
+except ImportError:
+	os.system("pip install requests")
+	import requests
+
+mirrorList = [["https://autohack.netlify.app/", "autohack.netlify.app"], ["https://gi-b716.github.io/autoHack/", "gi-b716.github.io"]]
+
+for i in range(len(mirrorList)):
+	print("{0}. {1}".format(i, mirrorList[i][0]))
+	os.system("ping {0} -n 2 -w 500".format(mirrorList[i][1]))
+	print()
+
+mirror = mirrorList[int(input("Set mirror: "))][0]
+
+os.system("cls")
 
 lasted = str(requests.get("{0}/LASTED".format(mirror)).content, "utf-8")
 
