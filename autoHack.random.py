@@ -28,9 +28,11 @@ if config.compileBeforeRun==True:
     print("Compile program(s)")
     logger.info("Compile program(s)")
     if config.skipGenerate==False:
-        os.system("{0}".format(config.compileCommands.replace("$(name)",config.stdFile)))
+        os.system("{0}".format(config.compileCommands[1].replace("$(name)",config.stdFile)))
     if config.skipRun==False:
-        os.system("{0}".format(config.compileCommands.replace("$(name)",config.sourceFile)))
+        os.system("{0}".format(config.compileCommands[0].replace("$(name)",config.sourceFile)))
+    if config.checkerFile != "":
+        os.system("{0}".format(config.compileCheckerCommands.replace("$(cname)",config.checkerFile)))
     print("Compile done.")
 
 if config.previewHackDataTime > 0 and not config.skipGenerate:
@@ -97,6 +99,11 @@ if config.skipRun==False:
             logger.warning("Catch diff! See {0} and {1}".format(refer[0],refer[1]))
             time.sleep(config.waitTime)
             diffCount += 1
+
+        elif result[0]!=0 and result[0]!=1:
+            print("Checker failed! Exit code: {0}".format(result[0]))
+            logger.error("Checker failed! Exit code: {0}".format(result[0]))
+            sys.exit(0)
 
         if diffCount == config.wrongLimits:
             sys.exit(0)

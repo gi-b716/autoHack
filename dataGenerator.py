@@ -19,9 +19,14 @@ class Config:
 
     # Program
     compileBeforeRun = True
-    compileCommands = "g++ $(name).cpp -o $(name)" # $(name) will be automatically replaced with the source program name
-    runningCommands = ".\\$(name)"
+    compileCommands = ["g++ $(name).cpp -o $(name) -Wl,--stack=$(mem)", ""] # $(name) will be automatically replaced with the source program name
+    runningCommands = [".\\$(name)", ""]
     useFileIO = False
+
+    # Checker
+    checkerFile = ""
+    compileCheckerCommands = "g++ $(cname).cpp -o $(cname)"
+    runningCheckerCommands =  ".\\$(cname) $(i) $(a) $(o)"
 
     # File
     dataFileName = (("hack","in"),("hack","ans"))
@@ -31,6 +36,14 @@ class Config:
     # Debug
     skipGenerate = False
     skipRun = False
+
+    def __init__(self):
+        if self.compileCommands[1] == "":
+            self.compileCommands[1] = self.compileCommands[0]
+        if self.runningCommands[1] == "":
+            self.runningCommands[1] = self.runningCommands[0]
+        self.compileCommands[0] = self.compileCommands[0].replace("$(mem)", str(self.memoryLimits*1024*1024))
+        self.compileCommands[1] = self.compileCommands[1].replace("$(mem)", str(self.memoryLimits*1024*1024))
 
 class Utils:
     def __init__(self):
@@ -88,9 +101,9 @@ class Data:
 
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
         if self.config.useFileIO==False:
-            os.system("{0} < {1} > {2}".format(self.config.runningCommands.replace("$(name)",self.config.stdFile),freInputFileName,freOutputFileName))
+            os.system("{0} < {1} > {2}".format(self.config.runningCommands[1].replace("$(name)",self.config.stdFile),freInputFileName,freOutputFileName))
         else:
-            os.system("{0}".format(self.config.runningCommands.replace("$(name)",self.config.stdFile)))
+            os.system("{0}".format(self.config.runningCommands[1].replace("$(name)",self.config.stdFile)))
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("rename {0} {1}".format(freOutputFileName,ansFileName))
 
@@ -110,7 +123,7 @@ class Data:
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
 
         utilsObject = Utils()
-        runCommand = "{0}".format(self.config.runningCommands.replace("$(name)",self.config.sourceFile))
+        runCommand = "{0}".format(self.config.runningCommands[0].replace("$(name)",self.config.sourceFile))
         if self.config.useFileIO==False:
             inputFilePipe = open("{0}".format(freInputFileName), "r")
             outputFilePipe = open("{0}".format(freOutputFileName), "w")
@@ -136,35 +149,39 @@ class Data:
         if timeOutTag==False and exitCode==0 and memoryOutTag==False:
             ansFile = open("{0}".format(ansFileName), "r")
             outputFile = open("{0}".format(freOutputFileName), "r")
-
             ans = ansFile.read()
             output = outputFile.read()
 
-            if self.config.ignoreSomeCharactersAtTheEnd:
-                ans = ans.rstrip("\n");
-                output = output.rstrip("\n");
-                anst = ans.splitlines();
-                outputt = output.splitlines();
-                if len(anst)==len(outputt):
-                    result = 1
-                    for i in range(len(anst)):
-                        if anst[i].rstrip()!=outputt[i].rstrip():
-                            result = 0
-                            if self.config.saveWrongOutput==True:
-                                os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
-                                os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
-                            break
-                else:
-                    if self.config.saveWrongOutput==True:
-                        os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
-                        os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
+            if self.config.checkerFile != "":
+                runCheckerCommand = self.config.runningCheckerCommands.replace("$(cname)",self.config.checkerFile).replace("$(i)",freInputFileName).replace("$(a)",ansFileName).replace("$(o)",freOutputFileName)
+                result = os.system("{0}".format(runCheckerCommand))
+
             else:
-                if ans==output:
-                    result = 1
+                if self.config.ignoreSomeCharactersAtTheEnd:
+                    ans = ans.rstrip("\n");
+                    output = output.rstrip("\n");
+                    anst = ans.splitlines();
+                    outputt = output.splitlines();
+                    if len(anst)==len(outputt):
+                        result = 1
+                        for i in range(len(anst)):
+                            if anst[i].rstrip()!=outputt[i].rstrip():
+                                result = 0
+                                if self.config.saveWrongOutput==True:
+                                    os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
+                                    os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
+                                break
+                    else:
+                        if self.config.saveWrongOutput==True:
+                            os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
+                            os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
                 else:
-                    if self.config.saveWrongOutput==True:
-                        os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
-                        os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
+                    if ans==output:
+                        result = 1
+                    else:
+                        if self.config.saveWrongOutput==True:
+                            os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
+                            os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
 
             ansFile.close()
             outputFile.close()
@@ -182,8 +199,8 @@ class Test:
     def previewHackData(self):
         configObj = Config()
         dataObj = Data(configObj)
-        dataObj.generateData(0)
-        refer = dataObj.getFileName(0)
+        dataObj.generateData(-1)
+        refer = dataObj.getFileName(-1)
 
         print("Input:")
         with open(refer[0],"r") as inputFile:
@@ -243,13 +260,13 @@ Enter a number to execute: """)
         if sendBackInformation == '1':
             print("Test 1/1: previewHackData\n")
             if self.configObj.compileBeforeRun == True:
-                os.system("{0}".format(self.configObj.compileCommands.replace("$(name)",self.configObj.stdFile)))
+                os.system("{0}".format(self.configObj.compileCommands[1].replace("$(name)",self.configObj.stdFile)))
             testObject.previewHackData()
             print()
         elif sendBackInformation == '2':
             print("Test: previewHackData\n")
             if self.configObj.compileBeforeRun == True:
-                os.system("{0}".format(self.configObj.compileCommands.replace("$(name)",self.configObj.stdFile)))
+                os.system("{0}".format(self.configObj.compileCommands[1].replace("$(name)",self.configObj.stdFile)))
             testObject.previewHackData()
             print()
         elif sendBackInformation == 'b':
@@ -284,7 +301,7 @@ Enter a number to execute: """)
         self.mainPage()
 
 class Meta:
-    _version = "5.1.3"
+    _version = "6.0.0"
 
 
 if __name__ == "__main__":

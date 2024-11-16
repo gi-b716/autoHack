@@ -28,8 +28,10 @@ os.system("cls")
 if config.compileBeforeRun==True:
     print("Compile program(s)")
     logger.info("Compile program(s)")
-    os.system("{0}".format(config.compileCommands.replace("$(name)",config.stdFile)))
-    os.system("{0}".format(config.compileCommands.replace("$(name)",config.sourceFile)))
+    os.system("{0}".format(config.compileCommands[1].replace("$(name)",config.stdFile)))
+    os.system("{0}".format(config.compileCommands[0].replace("$(name)",config.sourceFile)))
+    if config.checkerFile != "":
+        os.system("{0}".format(config.compileCheckerCommands.replace("$(cname)",config.checkerFile)))
     print("Compile done.")
 
 os.system("rmdir /s/q wrongOutput")
@@ -90,6 +92,11 @@ while True:
         logger.warning("Catch diff!")
         time.sleep(config.waitTime)
         diffCount += 1
+
+    elif result[0]!=0 and result[0]!=1:
+        print("Checker failed! Exit code: {0}".format(result[0]))
+        logger.error("Checker failed! Exit code: {0}".format(result[0]))
+        sys.exit(0)
 
     else:
         os.system("del {0} /q".format(refer[0]))
