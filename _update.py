@@ -1,14 +1,16 @@
+import requests
 import zipfile
 import sys
 import os
 
-try:
-	import requests
-except ImportError:
-	os.system("pip install requests")
-	import requests
-
 mirrorList = [["https://autohack.netlify.app/", "autohack.netlify.app"], ["https://gi-b716.github.io/autoHack/", "gi-b716.github.io"]]
+
+if os.path.exists("dataGenerator.py"):
+	import dataGenerator
+	metaObject = dataGenerator.Meta()
+	if metaObject._version == "":
+		print("Disabled update.")
+		sys.exit(0)
 
 for i in range(len(mirrorList)):
 	print("{0}. {1}".format(i, mirrorList[i][0]))
@@ -26,9 +28,6 @@ if os.path.exists("dataGenerator.py"):
 	metaObject = dataGenerator.Meta()
 	if lasted == metaObject._version:
 		print("autoHack is up to date.")
-		sys.exit(0)
-	if metaObject._version == "":
-		print("Disabled update.")
 		sys.exit(0)
 
 res = input("Check new version: {0}\nUpdate? (y/[n]): ".format(lasted))
