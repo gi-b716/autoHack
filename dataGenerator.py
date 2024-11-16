@@ -1,5 +1,6 @@
 import subprocess
 import threading
+import requests
 import psutil
 import random
 import sys
@@ -76,6 +77,22 @@ class Utils:
         if self.memoryOut == True:
             retcode = 0
         return retcode
+
+    def getLastedTestlib(self):
+        testlibRepoApi = "https://api.github.com/repos/MikeMirzayanov/testlib/releases/latest"
+        response = requests.get("{0}".format(testlibRepoApi))
+        lasted = response.json()["tag_name"]
+        downloadUrl = "https://github.com/MikeMirzayanov/testlib/releases/download/{0}/testlib.h".format(lasted)
+        print("Download testlib {0}".format(lasted))
+        testlib = requests.get("{0}".format(downloadUrl))
+        with open("testlib.h", "w") as testlibFile:
+            testlibFile.write(str(testlib.content, "utf-8"))
+        res = input("Download testlib-{0}.zip? (y/[n]): ".format(lasted))
+        if res != 'y':
+            return
+        zipFile = requests.get("https://github.com/MikeMirzayanov/testlib/releases/download/{0}/testlib-{0}.zip".format(lasted))
+        with open("testlib-{0}.zip".format(lasted), "wb") as zf:
+            zf.write(zipFile.content)
 
 class Data:
     def __init__(self, config:Config):
@@ -281,7 +298,8 @@ Enter a number to execute: """)
 1. Create a new instance using _create.py
 2. Run autoHack.infinite.py
 3. Run autoHack.random.py
-4. Run test
+4. Download testlib
+5. Run test
 
 q. Exit
 Enter a number to execute: """)
@@ -294,6 +312,9 @@ Enter a number to execute: """)
         elif sendBackInformation == '3':
             self.runningAutohack("random")
         elif sendBackInformation == '4':
+            utilsObject = Utils()
+            utilsObject.getLastedTestlib()
+        elif sendBackInformation == '5':
             self.testPage()
         elif sendBackInformation == 'q':
             sys.exit(0)
@@ -301,7 +322,7 @@ Enter a number to execute: """)
         self.mainPage()
 
 class Meta:
-    _version = "6.0.0"
+    _version = "6.0.0" # Update!
 
 
 if __name__ == "__main__":
