@@ -27,7 +27,8 @@ class Config:
     # Checker
     checkerFile = ""
     compileCheckerCommands = "g++ $(cname).cpp -o $(cname)"
-    runningCheckerCommands =  ".\\$(cname) $(i) $(a) $(o)"
+    runningCheckerCommands =  ".\\$(cname) $(i) $(o) $(a)"
+    useTestlib = False
 
     # File
     dataFileName = (("hack","in"),("hack","ans"))
@@ -133,6 +134,7 @@ class Data:
         timeOutTag = False
         memoryOutTag = False
         exitCode = 0
+        checkerExitCode = 0
         result = 0
         ans = None
         output = None
@@ -169,7 +171,15 @@ class Data:
             ans = ansFile.read()
             output = outputFile.read()
 
-            if self.config.checkerFile != "":
+            if self.config.checkerFile != "" and self.config.useTestlib:
+                runCheckerCommand = "{0} 2> checkerResult".format(self.config.runningCheckerCommands.replace("$(cname)",self.config.checkerFile).replace("$(i)",freInputFileName).replace("$(a)",ansFileName).replace("$(o)",freOutputFileName))
+                checkerExitCode = os.system("{0}".format(runCheckerCommand))
+                if checkerExitCode == 0:
+                    result = 1
+                else:
+                    result = 0
+
+            elif self.config.checkerFile != "":
                 runCheckerCommand = self.config.runningCheckerCommands.replace("$(cname)",self.config.checkerFile).replace("$(i)",freInputFileName).replace("$(a)",ansFileName).replace("$(o)",freOutputFileName)
                 result = os.system("{0}".format(runCheckerCommand))
 
@@ -206,7 +216,7 @@ class Data:
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("del {0} /q".format(freOutputFileName))
 
-        return [result,timeOutTag,self.config.timeLimits,ans,output,exitCode,memoryOutTag,self.config.memoryLimits]
+        return [result,timeOutTag,self.config.timeLimits,ans,output,exitCode,memoryOutTag,self.config.memoryLimits,checkerExitCode]
 
 class Test:
     def __init__(self):
@@ -322,7 +332,7 @@ Enter a number to execute: """)
         self.mainPage()
 
 class Meta:
-    _version = "6.0.0" # Update!
+    _version = "6.1.0"
 
 
 if __name__ == "__main__":

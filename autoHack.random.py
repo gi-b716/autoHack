@@ -76,7 +76,18 @@ if config.skipRun==False:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
 
-        if result[1]==True:
+        if config.checkerFile != "" and config.useTestlib:
+            checkerResFile = open("checkerResult","r")
+            checkerRes = checkerResFile.read()
+            checkerResFile.close()
+            os.system("del checkerResult /q")
+            print("{0}".format(checkerRes))
+            logger.debug("{0} Exit code: {1}.".format(checkerRes.replace("\n"," | "),result[8]))
+            if result[0]==0:
+                time.sleep(config.waitTime)
+                diffCount += 1
+
+        elif result[1]==True:
             print("Time Limit Exceeded on data {0}!".format(samplesId))
             logger.warning("Time Limit Exceeded! On {0} and {1}, exceed {2} ms".format(refer[0],refer[1],result[2]))
             time.sleep(config.waitTime)
