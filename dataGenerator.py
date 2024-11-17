@@ -188,7 +188,7 @@ class Data:
             elif self.config.checkerFile != "":
                 runCheckerCommand = self.config.runningCheckerCommands.replace("$(cname)",self.config.checkerFile).replace("$(i)",freInputFileName).replace("$(a)",ansFileName).replace("$(o)",freOutputFileName)
                 result = os.system("{0}".format(runCheckerCommand))
-                if result == 0:
+                if result != 1:
                     os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
                     os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
 
