@@ -176,12 +176,21 @@ class Data:
                 checkerExitCode = os.system("{0}".format(runCheckerCommand))
                 if checkerExitCode == 0:
                     result = 1
+                elif checkerExitCode == 3:
+                    result = -1
+                    os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
+                    os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
                 else:
                     result = 0
+                    os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
+                    os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
 
             elif self.config.checkerFile != "":
                 runCheckerCommand = self.config.runningCheckerCommands.replace("$(cname)",self.config.checkerFile).replace("$(i)",freInputFileName).replace("$(a)",ansFileName).replace("$(o)",freOutputFileName)
                 result = os.system("{0}".format(runCheckerCommand))
+                if result == 0:
+                    os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
+                    os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
 
             else:
                 if self.config.ignoreSomeCharactersAtTheEnd:
@@ -332,7 +341,7 @@ Enter a number to execute: """)
         self.mainPage()
 
 class Meta:
-    _version = "6.1.1"
+    _version = "6.1.2"
 
 
 if __name__ == "__main__":

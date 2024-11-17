@@ -67,6 +67,9 @@ while True:
         if result[0]==0:
             time.sleep(config.waitTime)
             diffCount += 1
+        if result[0]==-1:
+            print("Checker failed!")
+            sys.exit(0)
 
     elif result[1]==True:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))

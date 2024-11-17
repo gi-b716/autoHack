@@ -86,6 +86,9 @@ if config.skipRun==False:
             if result[0]==0:
                 time.sleep(config.waitTime)
                 diffCount += 1
+            if result[0]==-1:
+                print("Checker failed on data {0}!".format(samplesId))
+                sys.exit(0)
 
         elif result[1]==True:
             print("Time Limit Exceeded on data {0}!".format(samplesId))
