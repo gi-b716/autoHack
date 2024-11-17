@@ -172,7 +172,7 @@ class Data:
             output = outputFile.read()
 
             if self.config.checkerFile != "" and self.config.useTestlib:
-                runCheckerCommand = "{0} 2> checkerResult".format(self.config.runningCheckerCommands.replace("$(cname)",self.config.checkerFile).replace("$(i)",freInputFileName).replace("$(a)",ansFileName).replace("$(o)",freOutputFileName))
+                runCheckerCommand = "{0} checkerResult".format(self.config.runningCheckerCommands.replace("$(cname)",self.config.checkerFile).replace("$(i)",freInputFileName).replace("$(a)",ansFileName).replace("$(o)",freOutputFileName))
                 checkerExitCode = os.system("{0}".format(runCheckerCommand))
                 if checkerExitCode == 0:
                     result = 1
@@ -332,7 +332,7 @@ Enter a number to execute: """)
         self.mainPage()
 
 class Meta:
-    _version = "6.1.0"
+    _version = "6.1.1"
 
 
 if __name__ == "__main__":
