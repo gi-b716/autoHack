@@ -69,7 +69,7 @@ while True:
             os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
             print("Checker failed!")
             sys.exit(0)
-        if result[0]!=0:
+        if result[0]!=1:
             os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
             os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
             time.sleep(config.waitTime)
