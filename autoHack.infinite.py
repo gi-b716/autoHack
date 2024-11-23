@@ -64,12 +64,16 @@ while True:
         os.system("del checkerResult /q")
         print("{0}".format(checkerRes))
         logger.debug("{0} Exit code: {1}.".format(checkerRes.replace("\n"," | "),result[8]))
-        if result[0]==0:
-            time.sleep(config.waitTime)
-            diffCount += 1
         if result[0]==-1:
+            os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
+            os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
             print("Checker failed!")
             sys.exit(0)
+        if result[0]!=0:
+            os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
+            os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
+            time.sleep(config.waitTime)
+            diffCount += 1
 
     elif result[1]==True:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
@@ -108,6 +112,8 @@ while True:
         diffCount += 1
 
     elif result[0]!=0 and result[0]!=1:
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
+        os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         print("Checker failed! Exit code: {0}".format(result[0]))
         logger.error("Checker failed! Exit code: {0}".format(result[0]))
         sys.exit(0)
