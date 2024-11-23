@@ -3,7 +3,7 @@ import zipfile
 import sys
 import os
 
-mirrorList = [["https://autohack.netlify.app/", "autohack.netlify.app"], ["https://gi-b716.github.io/autoHack/", "gi-b716.github.io"]]
+mirrorList = [["https://autohack.netlify.app/", "www.netlify.com"], ["https://gi-b716.github.io/autoHack/", "gi-b716.github.io"], ["https://autohack.pages.dev/", "autohack.pages.dev"]]
 
 if os.path.exists("dataGenerator.py"):
 	import dataGenerator

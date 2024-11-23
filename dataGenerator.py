@@ -341,7 +341,7 @@ Enter a number to execute: """)
         self.mainPage()
 
 class Meta:
-    _version = "6.1.4"
+    _version = "6.1.5"
 
 
 if __name__ == "__main__":
