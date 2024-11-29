@@ -28,7 +28,7 @@ class Config:
     checkerFile = ""
     compileCheckerCommands = "g++ $(cname).cpp -o $(cname)"
     runningCheckerCommands =  ".\\$(cname) $(i) $(o) $(a)"
-    useTestlib = False
+    useTestlib = True
 
     # File
     dataFileName = (("hack","in"),("hack","ans"))
@@ -341,7 +341,7 @@ Enter a number to execute: """)
         self.mainPage()
 
 class Meta:
-    _version = "6.1.8"
+    _version = "6.2.0"
 
 
 if __name__ == "__main__":

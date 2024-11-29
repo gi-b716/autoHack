@@ -67,11 +67,13 @@ while True:
         if result[0]==-1:
             os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
             os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
+            os.system("cls")
             print("Checker failed!")
             sys.exit(0)
         if result[0]!=1:
             os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
             os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
+            os.system("cls")
             time.sleep(config.waitTime)
             diffCount += 1
 
@@ -106,7 +108,7 @@ while True:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
-        print("Catch diff!")
+        print("Catch diff!\nAns:\n{1}\nOutput:\n{2}\n".format(result[3],result[4]))
         logger.warning("Catch diff!")
         time.sleep(config.waitTime)
         diffCount += 1
@@ -114,6 +116,7 @@ while True:
     elif result[0]!=0 and result[0]!=1:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
+        os.system("cls")
         print("Checker failed! Exit code: {0}".format(result[0]))
         logger.error("Checker failed! Exit code: {0}".format(result[0]))
         sys.exit(0)
