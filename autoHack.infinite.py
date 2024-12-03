@@ -14,7 +14,7 @@ diffCount = 0
 # Init logger
 logger = logging.getLogger('logger')
 logger.setLevel(logging.DEBUG)
-logFile = logging.FileHandler("hackLog.random.log")
+logFile = logging.FileHandler("hackLog.infinite.log")
 logFile.setLevel(logging.DEBUG)
 logFormatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logFile.setFormatter(logFormatter)
@@ -108,7 +108,7 @@ while True:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
-        print("Catch diff!\nAns:\n{1}\nOutput:\n{2}\n".format(result[3],result[4]))
+        print("Catch diff!\nAns:\n{0}\nOutput:\n{1}\n".format(result[3],result[4]))
         logger.warning("Catch diff!")
         time.sleep(config.waitTime)
         diffCount += 1
