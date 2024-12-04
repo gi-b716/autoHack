@@ -68,9 +68,6 @@ class Utils:
             monitor.start()
             try:
                 process.communicate(None, timeout=timeout)
-            except subprocess.TimeoutExpired as exc:
-                process.kill()
-                raise
             except:
                 process.kill()
                 raise
