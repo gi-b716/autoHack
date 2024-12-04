@@ -88,7 +88,8 @@ class Utils:
         res = input("Download testlib-{0}.zip? (y/[n]): ".format(lasted))
         if res != 'y':
             return
-        zipFile = requests.get("https://github.com/MikeMirzayanov/testlib/releases/download/{0}/testlib-{0}.zip".format(lasted))
+        downloadUrl = "https://github.com/MikeMirzayanov/testlib/releases/download/{0}/testlib-{0}.zip".format(lasted)
+        zipFile = requests.get("{0}".format(downloadUrl))
         with open("testlib-{0}.zip".format(lasted), "wb") as zf:
             zf.write(zipFile.content)
 
