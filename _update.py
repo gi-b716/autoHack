@@ -3,7 +3,8 @@ import zipfile
 import sys
 import os
 
-mirrorList = [["https://autohack.netlify.app/", "www.netlify.com"], ["https://gi-b716.github.io/autoHack/", "gi-b716.github.io"], ["https://autohack.pages.dev/", "autohack.pages.dev"]]
+mirrorList = ["https://autohack.netlify.app/", "https://gi-b716.github.io/autoHack/", "https://autohack.pages.dev/"]
+pingTime = []
 
 if os.path.exists("dataGenerator.py"):
 	import dataGenerator
@@ -12,16 +13,23 @@ if os.path.exists("dataGenerator.py"):
 		print("Disabled update.")
 		sys.exit(0)
 
-for i in range(len(mirrorList)):
-	print("{0}. {1}".format(i, mirrorList[i][0]))
-	os.system("ping {0} -n 2 -w 500".format(mirrorList[i][1]))
-	print()
+lasted = None
 
-mirror = mirrorList[int(input("Set mirror: "))][0]
+for mirror in mirrorList:
+	res = None
+	try:
+		res = requests.get("{0}/LASTED".format(mirror), timeout=5)
+		lasted = str(res.content, "utf-8")
+	except:
+		pingTime.append(1000000.0)
+		print("> \"{0}\": Time Out! <".format(mirror), file=sys.stderr)
+	else:
+		pingTime.append(res.elapsed.total_seconds())
+		print("> \"{0}\": {1}s <".format(mirror, res.elapsed.total_seconds()), file=sys.stderr)
 
-os.system("cls")
-
-lasted = str(requests.get("{0}/LASTED".format(mirror)).content, "utf-8")
+if lasted == None:
+	print("Check your network connection!")
+	sys.exit(-1)
 
 if os.path.exists("dataGenerator.py"):
 	import dataGenerator
@@ -37,15 +45,18 @@ if res != 'y':
 path = os.path.dirname(os.path.abspath(__file__))
 files = os.listdir(".")
 
+mirror = mirrorList[pingTime.index(min(pingTime))]
+print("> Mirror: \"{0}\" <".format(mirror), file=sys.stderr)
+
+lstFile = requests.get("{0}/meta/{1}.zip".format(mirror,lasted))
+with open("{0}.zip".format(lasted), "wb") as zf:
+	zf.write(lstFile.content)
+
 for file in files:
 	if os.path.isdir(file):
 		os.system("rmdir /s/q {0}".format(file))
 	else:
 		os.system("del {0}".format(file))
-
-lstFile = requests.get("{0}/meta/{1}.zip".format(mirror,lasted))
-with open("{0}.zip".format(lasted), "wb") as zf:
-	zf.write(lstFile.content)
 
 with zipfile.ZipFile("{0}.zip".format(lasted), "r") as z:
 	z.extractall("{0}\\".format(path))
