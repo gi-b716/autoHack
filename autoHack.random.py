@@ -1,4 +1,5 @@
 import dataGenerator
+import hashlib
 import logging
 import time
 import sys
@@ -9,6 +10,9 @@ data = dataGenerator.Data(config)
 test = dataGenerator.Test()
 
 diffCount = 0
+generateStart = 0
+runStart = 0
+clearTag = False
 
 # Init logger
 logger = logging.getLogger('logger')
@@ -35,18 +39,52 @@ if config.compileBeforeRun==True:
         os.system("{0}".format(config.compileCheckerCommands.replace("$(cname)",config.checkerFile)))
     print("Compile done.")
 
+md5Obj = hashlib.md5()
+with open("dataGenerator.py", "rb") as fileObj:
+    while True:
+        fileData = fileObj.read(4096)
+        if not fileData:
+            break
+        md5Obj.update(fileData)
+md5Result = md5Obj.hexdigest()
+
+if os.path.exists("KEEP"):
+    keepFile = open("KEEP", "r")
+    keepFileContent = keepFile.readlines()
+    keepFile.close()
+    os.remove("KEEP")
+    if md5Result == keepFileContent[0].strip():
+        askRes = input("Detected unfinished tasks, do you want to restore them? (y/[n]): ")
+        if askRes == "y":
+            if keepFileContent[-2].strip() == "g":
+                generateStart = int(keepFileContent[-1].strip())
+                clearTag = True
+            if keepFileContent[-2].strip() == "r":
+                runStart = int(keepFileContent[-1].strip())
+                config.skipGenerate = True
+
 if config.previewHackDataTime > 0 and not config.skipGenerate:
     test.previewHackData()
     time.sleep(config.previewHackDataTime)
     logger.info("Preview hack data.")
 
+keepFileObj = open("KEEP", "w")
+os.system("attrib +h KEEP")
+keepFileObj.write("{0}\n".format(md5Result))
+
 # Generate hack data
 if config.skipGenerate==False:
     logger.info("Start generate hack data")
-    os.system("rmdir /s/q hackData")
-    os.system("md hackData")
-    logger.info("Cleaning hack data history")
-    for samplesId in range(config.numberOfSamples):
+    if not clearTag:
+        os.system("rmdir /s/q hackData")
+        os.system("md hackData")
+        logger.info("Cleaning hack data history")
+    else:
+        refer = data.getFileName(generateStart)
+        try: os.remove("{0}".format(refer[0]));os.remove("{0}".format(refer[1]));os.remove("{0}".format(refer[2]));os.remove("{0}".format(refer[3]))
+        except: pass
+    for samplesId in range(generateStart, config.numberOfSamples):
+        keepFileObj.write("g\n{0}\n".format(samplesId))
         refer = data.getFileName(samplesId)
         data.generateData(samplesId)
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
@@ -64,7 +102,8 @@ if config.skipRun==False:
     if config.saveWrongOutput==True:
         os.system("md wrongOutput")
         logger.info("Cleaning wrong output history")
-    for samplesId in range(config.numberOfSamples):
+    for samplesId in range(runStart, config.numberOfSamples):
+        keepFileObj.write("r\n{0}\n".format(samplesId))
         refer = data.getFileName(samplesId)
         os.system("move .\\hackData\\{0} .\\{0}".format(refer[0]))
         os.system("move .\\hackData\\{0} .\\{0}".format(refer[1]))
@@ -120,9 +159,13 @@ if config.skipRun==False:
             sys.exit(0)
 
         if diffCount == config.wrongLimits:
+            keepFileObj.close()
+            os.remove("KEEP")
             sys.exit(0)
     logger.info("Catch {0} diff".format(diffCount))
 else:
     logger.info("Skip judge")
 
 logger.info("Done.")
+keepFileObj.close()
+os.remove("KEEP")
