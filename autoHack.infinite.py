@@ -25,6 +25,10 @@ logger.info("Init logger")
 os.system("echo off")
 os.system("cls")
 
+if not os.path.isdir(".autohack"):
+    os.mkdir(".autohack")
+    os.system("attrib +h .autohack")
+
 if config.compileBeforeRun==True:
     print("Compile program(s)")
     logger.info("Compile program(s)")

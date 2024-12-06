@@ -339,7 +339,7 @@ Enter a number to execute: """)
         self.mainPage()
 
 class Meta:
-    _version = "6.3.0"
+    _version = "6.3.1"
 
 
 if __name__ == "__main__":

@@ -28,6 +28,10 @@ logger.info("Init logger")
 os.system("echo off")
 os.system("cls")
 
+if not os.path.isdir(".autohack"):
+    os.mkdir(".autohack")
+    os.system("attrib +h .autohack")
+
 if config.compileBeforeRun==True:
     print("Compile program(s)")
     logger.info("Compile program(s)")
@@ -48,11 +52,11 @@ with open("dataGenerator.py", "rb") as fileObj:
         md5Obj.update(fileData)
 md5Result = md5Obj.hexdigest()
 
-if os.path.exists("KEEP"):
-    keepFile = open("KEEP", "r")
+if os.path.exists(".\\.autohack\\keep"):
+    keepFile = open(".\\.autohack\\keep", "r")
     keepFileContent = keepFile.readlines()
     keepFile.close()
-    os.remove("KEEP")
+    os.remove(".\\.autohack\\keep")
     if md5Result == keepFileContent[0].strip():
         askRes = input("Detected unfinished tasks, do you want to restore them? (y/[n]): ")
         if askRes == "y":
@@ -68,8 +72,7 @@ if config.previewHackDataTime > 0 and not config.skipGenerate:
     time.sleep(config.previewHackDataTime)
     logger.info("Preview hack data.")
 
-keepFileObj = open("KEEP", "w")
-os.system("attrib +h KEEP")
+keepFileObj = open(".\\.autohack\\keep", "w")
 keepFileObj.write("{0}\n".format(md5Result))
 
 # Generate hack data
@@ -160,7 +163,7 @@ if config.skipRun==False:
 
         if diffCount == config.wrongLimits:
             keepFileObj.close()
-            os.remove("KEEP")
+            os.remove(".\\.autohack\\keep")
             sys.exit(0)
     logger.info("Catch {0} diff".format(diffCount))
 else:
@@ -168,4 +171,4 @@ else:
 
 logger.info("Done.")
 keepFileObj.close()
-os.remove("KEEP")
+os.remove(".\\.autohack\\keep")
