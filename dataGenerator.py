@@ -38,6 +38,7 @@ class Config:
     # Debug
     skipGenerate = False
     skipRun = False
+    commandAtEnd = ""
 
     def __init__(self):
         if self.compileCommands[1] == "":
@@ -339,7 +340,7 @@ Enter a number to execute: """)
         self.mainPage()
 
 class Meta:
-    _version = "6.3.1"
+    _version = "6.3.3"
 
 
 if __name__ == "__main__":

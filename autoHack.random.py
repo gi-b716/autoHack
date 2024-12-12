@@ -82,10 +82,6 @@ if config.skipGenerate==False:
         os.system("rmdir /s/q hackData")
         os.system("md hackData")
         logger.info("Cleaning hack data history")
-    else:
-        refer = data.getFileName(generateStart)
-        try: os.remove("{0}".format(refer[0]));os.remove("{0}".format(refer[1]));os.remove("{0}".format(refer[2]));os.remove("{0}".format(refer[3]))
-        except: pass
     for samplesId in range(generateStart, config.numberOfSamples):
         keepFileObj.write("g\n{0}\n".format(samplesId))
         refer = data.getFileName(samplesId)
@@ -127,6 +123,7 @@ if config.skipRun==False:
             logger.debug("{0} Exit code: {1}.".format(checkerRes.replace("\n"," | "),result[8]))
             if result[0]==-1:
                 print("Checker failed!")
+                os.system("{0}".format(commandAtEnd))
                 sys.exit(0)
             if result[0]!=1:
                 time.sleep(config.waitTime)
@@ -159,12 +156,15 @@ if config.skipRun==False:
         elif result[0]!=0 and result[0]!=1:
             print("Checker failed! Exit code: {0}".format(result[0]))
             logger.error("Checker failed! Exit code: {0}".format(result[0]))
+            os.system("{0}".format(commandAtEnd))
             sys.exit(0)
 
         if diffCount == config.wrongLimits:
             keepFileObj.close()
             os.remove(".\\.autohack\\keep")
+            os.system("{0}".format(commandAtEnd))
             sys.exit(0)
+
     logger.info("Catch {0} diff".format(diffCount))
 else:
     logger.info("Skip judge")
@@ -172,3 +172,4 @@ else:
 logger.info("Done.")
 keepFileObj.close()
 os.remove(".\\.autohack\\keep")
+os.system("{0}".format(commandAtEnd))

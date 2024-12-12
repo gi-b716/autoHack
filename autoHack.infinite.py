@@ -73,6 +73,7 @@ while True:
             os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
             os.system("cls")
             print("Checker failed!")
+            os.system("{0}".format(commandAtEnd))
             sys.exit(0)
         if result[0]!=1:
             os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
@@ -123,6 +124,7 @@ while True:
         os.system("cls")
         print("Checker failed! Exit code: {0}".format(result[0]))
         logger.error("Checker failed! Exit code: {0}".format(result[0]))
+        os.system("{0}".format(commandAtEnd))
         sys.exit(0)
 
     else:
@@ -131,7 +133,11 @@ while True:
         os.system("cls")
 
     if diffCount == config.wrongLimits:
-        sys.exit()
+        os.system("{0}".format(commandAtEnd))
+        sys.exit(0)
 
     if globalCount == config.numberOfSamples:
-        sys.exit()
+        os.system("{0}".format(commandAtEnd))
+        sys.exit(0)
+
+os.system("{0}".format(commandAtEnd))
