@@ -123,7 +123,7 @@ if config.skipRun==False:
             logger.debug("{0} Exit code: {1}.".format(checkerRes.replace("\n"," | "),result[8]))
             if result[0]==-1:
                 print("Checker failed!")
-                os.system("{0}".format(commandAtEnd))
+                os.system("{0}".format(config.commandAtEnd))
                 sys.exit(0)
             if result[0]!=1:
                 time.sleep(config.waitTime)
@@ -156,13 +156,13 @@ if config.skipRun==False:
         elif result[0]!=0 and result[0]!=1:
             print("Checker failed! Exit code: {0}".format(result[0]))
             logger.error("Checker failed! Exit code: {0}".format(result[0]))
-            os.system("{0}".format(commandAtEnd))
+            os.system("{0}".format(config.commandAtEnd))
             sys.exit(0)
 
         if diffCount == config.wrongLimits:
             keepFileObj.close()
             os.remove(".\\.autohack\\keep")
-            os.system("{0}".format(commandAtEnd))
+            os.system("{0}".format(config.commandAtEnd))
             sys.exit(0)
 
     logger.info("Catch {0} diff".format(diffCount))
@@ -172,4 +172,4 @@ else:
 logger.info("Done.")
 keepFileObj.close()
 os.remove(".\\.autohack\\keep")
-os.system("{0}".format(commandAtEnd))
+os.system("{0}".format(config.commandAtEnd))
