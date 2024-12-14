@@ -1,8 +1,10 @@
 import subprocess
 import threading
 import requests
+import zipfile
 import psutil
 import random
+import time
 import sys
 import os
 
@@ -242,6 +244,66 @@ class Data:
 
         return [result,timeOutTag,self.config.timeLimits,ans,output,exitCode,memoryOutTag,self.config.memoryLimits,checkerExitCode]
 
+class Tools:
+    class dataSet:
+        def __init__(self):
+            self.dataSetList = []
+
+        def refresh(self):
+            if not os.path.isdir(".autohack\\dataset"):
+                os.mkdir(".autohack\\dataset")
+                self.dataSetList = []
+                return
+            self.dataSetList = os.listdir(".autohack\\dataset")
+
+        def create(self):
+            self.refresh()
+            note = input("Please enter a note: ")
+            zipFileName = str(time.time())
+            if note != "":
+                zipFileName = zipFileName + "-" + note
+            if os.path.isdir("hackData"):
+                zipFileObj = zipfile.ZipFile(".\\hackData.zip", "w", zipfile.ZIP_DEFLATED)
+                fileList = os.listdir(".\\hackData")
+                for file in fileList:
+                    zipFileObj.write(".\\hackData\\{0}".format(file))
+                zipFileObj.close()
+            if os.path.isdir("wrongOutput"):
+                zipFileObj = zipfile.ZipFile(".\\wrongOutput.zip", "w", zipfile.ZIP_DEFLATED)
+                fileList = os.listdir(".\\wrongOutput")
+                for file in fileList:
+                    zipFileObj.write(".\\wrongOutput\\{0}".format(file))
+                zipFileObj.close()
+            zipFileObj = zipfile.ZipFile(".\\{0}.zip".format(zipFileName), "w", zipfile.ZIP_DEFLATED)
+            if os.path.exists("hackData.zip"):
+                zipFileObj.write(".\\hackData.zip")
+            if os.path.exists("wrongOutput.zip"):
+                zipFileObj.write(".\\wrongOutput.zip")
+            zipFileObj.close()
+            os.system("move {0}.zip .\\.autohack\\dataset".format(zipFileName))
+            os.system("del hackData.zip")
+            os.system("del wrongOutput.zip")
+
+        def switch(self, id):
+            self.refresh()
+            os.system("rmdir /s/q hackData")
+            os.system("rmdir /s/q wrongOutput")
+            os.system("copy .\\.autohack\\dataset\\{0}".format(self.dataSetList[id]))
+            with zipfile.ZipFile("{0}".format(self.dataSetList[id]), "r") as zipFileObj:
+                zipFileObj.extractall(".")
+            if os.path.exists("hackData.zip"):
+                with zipfile.ZipFile("hackData.zip", "r") as zipFileObj:
+                    zipFileObj.extractall(".")
+            if os.path.exists("wrongOutput.zip"):
+                with zipfile.ZipFile("wrongOutput.zip", "r") as zipFileObj:
+                    zipFileObj.extractall(".")
+            os.remove("{0}".format(self.dataSetList[id]))
+            os.system("del hackData.zip")
+            os.system("del wrongOutput.zip")
+
+        def delete(self, id):
+            os.system("del .\\.autohack\\dataset\\{0}".format(self.dataSetList[id]))
+
 class GUI:
     def __init__(self):
         self.configObj = Config()
@@ -299,13 +361,43 @@ Enter a number to execute: """)
 
         self.testPage()
 
+    def viewDataSet(self):
+        toolsObj = Tools()
+        dataSetObj = toolsObj.dataSet()
+        dataSetObj.refresh()
+        for dataId in range(len(dataSetObj.dataSetList)):
+            data = dataSetObj.dataSetList[dataId]
+            dataName = data[:-4].split("-")
+            print("{0}. {1}".format(dataId, time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(float(dataName[0])))), end="")
+            if len(dataName) == 2:
+                print(" | {0}".format(dataName[1]))
+            else:
+                print()
+        sendBackInformation = input("\nc. Create\nq. Exit\nEnter a number to execute: ")
+        print()
+        try:
+            sendBackInformation = int(sendBackInformation)
+        except:
+            if sendBackInformation == "c":
+                dataSetObj.create()
+            elif sendBackInformation == "q":
+                return
+            else:
+                self.viewDataSet()
+        else:
+            if sendBackInformation < len(dataSetObj.dataSetList):
+                dataSetObj.switch(sendBackInformation)
+            else:
+                self.viewDataSet()
+
     def mainPage(self):
         sendBackInformation = input("""autoHack (GUI version)
 1. Create a new instance using _create.py
 2. Run autoHack.infinite.py
 3. Run autoHack.random.py
 4. Download testlib
-5. Run test
+5. View dataset
+6. Run test
 
 q. Exit
 Enter a number to execute: """)
@@ -321,6 +413,8 @@ Enter a number to execute: """)
             utilsObject = Utils()
             utilsObject.getLastedTestlib()
         elif sendBackInformation == '5':
+            self.viewDataSet()
+        elif sendBackInformation == '6':
             self.testPage()
         elif sendBackInformation == 'q':
             sys.exit(0)
@@ -328,9 +422,12 @@ Enter a number to execute: """)
         self.mainPage()
 
 class Meta:
-    _version = "6.3.3"
+    _version = "7.0.0"
 
 
 if __name__ == "__main__":
+    if not os.path.isdir(".autohack"):
+        os.mkdir(".autohack")
+        os.system("attrib +h .autohack")
     guiObject = GUI()
     guiObject.mainPage()

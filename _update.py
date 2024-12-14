@@ -49,14 +49,15 @@ mirror = mirrorList[pingTime.index(min(pingTime))]
 print("> Mirror: \"{0}\" <".format(mirror), file=sys.stderr)
 
 lstFile = requests.get("{0}/meta/{1}.zip".format(mirror,lasted))
-with open("{0}.zip".format(lasted), "wb") as zf:
-	zf.write(lstFile.content)
 
 for file in files:
 	if os.path.isdir(file):
 		os.system("rmdir /s/q {0}".format(file))
 	else:
 		os.system("del {0}".format(file))
+
+with open("{0}.zip".format(lasted), "wb") as zf:
+	zf.write(lstFile.content)
 
 with zipfile.ZipFile("{0}.zip".format(lasted), "r") as z:
 	z.extractall("{0}\\".format(path))
