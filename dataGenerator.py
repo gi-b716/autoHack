@@ -77,6 +77,22 @@ class Utils:
             retcode = 0
         return retcode
 
+    def previewHackData(self):
+        configObj = Config()
+        dataObj = Data(configObj)
+        dataObj.generateData(-1)
+        refer = dataObj.getFileName(-1)
+
+        print("Input:")
+        with open(refer[0],"r") as inputFile:
+            print("{0}".format(inputFile.read()))
+        print("\nAns:")
+        with open(refer[1],"r") as ansFile:
+            print("{0}".format(ansFile.read()))
+
+        os.system("del {0} /q".format(refer[0]))
+        os.system("del {0} /q".format(refer[1]))
+
     def getLastedTestlib(self):
         testlibRepoApi = "https://api.github.com/repos/MikeMirzayanov/testlib/releases/latest"
         response = requests.get("{0}".format(testlibRepoApi))
@@ -226,27 +242,6 @@ class Data:
 
         return [result,timeOutTag,self.config.timeLimits,ans,output,exitCode,memoryOutTag,self.config.memoryLimits,checkerExitCode]
 
-class Test:
-    def __init__(self):
-        pass
-
-    """Preview hack data"""
-    def previewHackData(self):
-        configObj = Config()
-        dataObj = Data(configObj)
-        dataObj.generateData(-1)
-        refer = dataObj.getFileName(-1)
-
-        print("Input:")
-        with open(refer[0],"r") as inputFile:
-            print("{0}".format(inputFile.read()))
-        print("\nAns:")
-        with open(refer[1],"r") as ansFile:
-            print("{0}".format(ansFile.read()))
-
-        os.system("del {0} /q".format(refer[0]))
-        os.system("del {0} /q".format(refer[1]))
-
 class GUI:
     def __init__(self):
         self.configObj = Config()
@@ -281,11 +276,10 @@ class GUI:
             os.system("{0} autoHack.random.py".format(self.pythonRunningCommand))
 
     def testPage(self):
-        testObject = Test()
+        utilsObject = Utils()
 
         sendBackInformation = input("""autoHack (GUI version) - Run test
-1. Run all tests
-2. Run previewHackData
+1. Run previewHackData
 
 b. Return to the main screen
 q. Exit
@@ -293,16 +287,10 @@ Enter a number to execute: """)
         print()
 
         if sendBackInformation == '1':
-            print("Test 1/1: previewHackData\n")
-            if self.configObj.compileBeforeRun == True:
-                os.system("{0}".format(self.configObj.compileCommands[1].replace("$(name)",self.configObj.stdFile)))
-            testObject.previewHackData()
-            print()
-        elif sendBackInformation == '2':
             print("Test: previewHackData\n")
             if self.configObj.compileBeforeRun == True:
                 os.system("{0}".format(self.configObj.compileCommands[1].replace("$(name)",self.configObj.stdFile)))
-            testObject.previewHackData()
+            utilsObject.previewHackData()
             print()
         elif sendBackInformation == 'b':
             return

@@ -7,7 +7,7 @@ import os
 
 config = dataGenerator.Config()
 data = dataGenerator.Data(config)
-test = dataGenerator.Test()
+utils = dataGenerator.Utils()
 
 diffCount = 0
 generateStart = 0
@@ -68,7 +68,7 @@ if os.path.exists(".\\.autohack\\keep"):
                 config.skipGenerate = True
 
 if config.previewHackDataTime > 0 and not config.skipGenerate:
-    test.previewHackData()
+    utils.previewHackData()
     time.sleep(config.previewHackDataTime)
     logger.info("Preview hack data.")
 

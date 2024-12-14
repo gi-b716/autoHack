@@ -6,7 +6,7 @@ import os
 
 config = dataGenerator.Config()
 data = dataGenerator.Data(config)
-test = dataGenerator.Test()
+utils = dataGenerator.Utils()
 
 globalCount = 0
 diffCount = 0
@@ -45,7 +45,7 @@ os.system("md hackData")
 logger.info("Cleaning wrong output history")
 
 if config.previewHackDataTime > 0 and not config.skipGenerate:
-    test.previewHackData()
+    utils.previewHackData()
     time.sleep(config.previewHackDataTime)
     logger.info("Preview hack data.")
 
