@@ -258,7 +258,9 @@ class Tools:
 
         def create(self):
             self.refresh()
-            note = input("Please enter a note: ")
+            note = "\\/:*?\"<>|"
+            while "\\" in note or "/" in note or ":" in note or "*" in note or "?" in note or "\"" in note or "<" in note or ">" in note or "|" in note:
+                note = input("Please enter a note: ")
             zipFileName = str(time.time())
             if note != "":
                 zipFileName = zipFileName + "-" + note
@@ -386,7 +388,14 @@ Enter a number to execute: """)
                 self.viewDataSet()
         else:
             if sendBackInformation < len(dataSetObj.dataSetList):
-                dataSetObj.switch(sendBackInformation)
+                choiceRes = input("s. Switch\nd. Delete\nEnter a number to execute: ")
+                print()
+                if choiceRes == "s":
+                    dataSetObj.switch(sendBackInformation)
+                elif choiceRes == "d":
+                    dataSetObj.delete(sendBackInformation)
+                else:
+                    self.viewDataSet()
             else:
                 self.viewDataSet()
 
@@ -422,7 +431,7 @@ Enter a number to execute: """)
         self.mainPage()
 
 class Meta:
-    _version = "7.0.0"
+    _version = "7.0.1"
 
 
 if __name__ == "__main__":
