@@ -309,8 +309,6 @@ class Tools:
 class GUI:
     def __init__(self):
         self.configObj = Config()
-        # self.pythonRunningCommand = input("Please enter the command you used to run the Python file (leave it blank to auto-fill with \"python\"): ")
-        self.pythonRunningCommand = "python"
         os.system("echo off")
         os.system("cls")
         print("autoHack (GUI version) is launched.\n")
@@ -328,40 +326,10 @@ class GUI:
 
         os.chdir("{0}".format(instanceDirectory))
         if instanceName == "":
-            os.system("{0} {1}".format(self.pythonRunningCommand,directory+"\\_create.py"))
+            os.system("python {1}".format(directory+"\\_create.py"))
         else:
-            os.system("{0} {1} {2}".format(self.pythonRunningCommand,directory+"\\_create.py",instanceName))
+            os.system("python {1} {2}".format(directory+"\\_create.py",instanceName))
         os.chdir("{0}".format(directory))
-
-    def runningAutohack(self, mode):
-        if mode == "infinite":
-            os.system("{0} autoHack.infinite.py".format(self.pythonRunningCommand))
-        elif mode == "random":
-            os.system("{0} autoHack.random.py".format(self.pythonRunningCommand))
-
-    def testPage(self):
-        utilsObject = Utils()
-
-        sendBackInformation = input("""autoHack (GUI version) - Run test
-1. Run previewHackData
-
-b. Return to the main screen
-q. Exit
-Enter a number to execute: """)
-        print()
-
-        if sendBackInformation == '1':
-            print("Test: previewHackData\n")
-            if self.configObj.compileBeforeRun == True:
-                os.system("{0}".format(self.configObj.compileCommands[1].replace("$(name)",self.configObj.stdFile)))
-            utilsObject.previewHackData()
-            print()
-        elif sendBackInformation == 'b':
-            return
-        elif sendBackInformation == 'q':
-            sys.exit(0)
-
-        self.testPage()
 
     def viewDataSet(self):
         toolsObj = Tools()
@@ -415,23 +383,21 @@ Enter a number to execute: """)
         if sendBackInformation == '1':
             self.createInstancePage()
         elif sendBackInformation == '2':
-            self.runningAutohack("infinite")
+            os.system("python autoHack.infinite.py")
         elif sendBackInformation == '3':
-            self.runningAutohack("random")
+            os.system("python autoHack.random.py")
         elif sendBackInformation == '4':
             utilsObject = Utils()
             utilsObject.getLastedTestlib()
         elif sendBackInformation == '5':
             self.viewDataSet()
-        elif sendBackInformation == '6':
-            self.testPage()
         elif sendBackInformation == 'q':
             sys.exit(0)
 
         self.mainPage()
 
 class Meta:
-    _version = "7.0.1"
+    _version = "7.0.2"
 
 
 if __name__ == "__main__":
