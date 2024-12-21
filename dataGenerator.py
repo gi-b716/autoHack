@@ -41,6 +41,7 @@ class Config:
     skipGenerate = False
     skipRun = False
     commandAtEnd = ""
+    dataOutputLimits = 200
 
     def __init__(self):
         if self.compileCommands[1] == "":
@@ -79,6 +80,13 @@ class Utils:
             retcode = 0
         return retcode
 
+    def printData(self, data):
+        configObj = Config()
+        if len(data) <= configObj.dataOutputLimits or configObj.dataOutputLimits < 0:
+            return data
+        else:
+            return data[:configObj.dataOutputLimits] + "..."
+
     def previewHackData(self):
         configObj = Config()
         dataObj = Data(configObj)
@@ -87,10 +95,10 @@ class Utils:
 
         print("Input:")
         with open(refer[0],"r") as inputFile:
-            print("{0}".format(inputFile.read()))
+            print("{0}".format(self.printData(inputFile.read())))
         print("\nAns:")
         with open(refer[1],"r") as ansFile:
-            print("{0}".format(ansFile.read()))
+            print("{0}".format(self.printData(ansFile.read())))
 
         os.system("del {0} /q".format(refer[0]))
         os.system("del {0} /q".format(refer[1]))
@@ -368,16 +376,16 @@ class GUI:
                 self.viewDataSet()
 
     def mainPage(self):
-        sendBackInformation = input("""autoHack (GUI version)
+        sendBackInformation = input("""autoHack (GUI version) v{0}
 1. Create a new instance using _create.py
 2. Run autoHack.infinite.py
 3. Run autoHack.random.py
-4. Download testlib
-5. View dataset
-6. Run test
+4. Preview hack data
+5. Download testlib
+6. View dataset
 
 q. Exit
-Enter a number to execute: """)
+Enter a number to execute: """.format(Meta._version))
         print()
 
         if sendBackInformation == '1':
@@ -388,8 +396,11 @@ Enter a number to execute: """)
             os.system("python autoHack.random.py")
         elif sendBackInformation == '4':
             utilsObject = Utils()
-            utilsObject.getLastedTestlib()
+            utilsObject.previewHackData()
         elif sendBackInformation == '5':
+            utilsObject = Utils()
+            utilsObject.getLastedTestlib()
+        elif sendBackInformation == '6':
             self.viewDataSet()
         elif sendBackInformation == 'q':
             sys.exit(0)
@@ -397,7 +408,7 @@ Enter a number to execute: """)
         self.mainPage()
 
 class Meta:
-    _version = "7.0.2"
+    _version = "7.0.3"
 
 
 if __name__ == "__main__":

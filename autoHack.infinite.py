@@ -113,7 +113,7 @@ while True:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
-        print("Catch diff!\nAns:\n{0}\nOutput:\n{1}\n".format(result[3],result[4]))
+        print("Catch diff!\nAns:\n{0}\nOutput:\n{1}\n".format(utils.printData(result[3]),utils.printData(result[4])))
         logger.warning("Catch diff!")
         time.sleep(config.waitTime)
         diffCount += 1
