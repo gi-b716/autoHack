@@ -36,11 +36,11 @@ if config.compileBeforeRun==True:
     print("Compile program(s)")
     logger.info("Compile program(s)")
     if config.skipGenerate==False:
-        os.system("{0}".format(config.compileCommands[1].replace("$(name)",config.stdFile)))
+        os.system("{0}".format(config.compileCommands[1]))
     if config.skipRun==False:
-        os.system("{0}".format(config.compileCommands[0].replace("$(name)",config.sourceFile)))
-    if config.checkerFile != "":
-        os.system("{0}".format(config.compileCheckerCommands.replace("$(cname)",config.checkerFile)))
+        os.system("{0}".format(config.compileCommands[0]))
+    if config.useCustomChecker:
+        os.system("{0}".format(config.compileCheckerCommands))
     print("Compile done.")
 
 md5Obj = hashlib.md5()
@@ -114,7 +114,7 @@ if config.skipRun==False:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
 
-        if config.checkerFile != "" and config.useTestlib:
+        if config.useCustomChecker and config.useTestlib:
             checkerResFile = open("checkerResult","r")
             checkerRes = checkerResFile.read()
             checkerResFile.close()

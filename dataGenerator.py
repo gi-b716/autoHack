@@ -10,8 +10,7 @@ import os
 
 class Config:
     numberOfSamples = 10
-    sourceFile = "source"
-    stdFile = "std"
+    globalArgs = {"sourceFile": "source", "stdFile": "std"}
     timeLimits = 1000 # ms
     memoryLimits = 1024 # MB
     waitTime = 3.0 # s
@@ -22,14 +21,16 @@ class Config:
 
     # Program
     compileBeforeRun = True
-    compileCommands = ["g++ $(name).cpp -o $(name) -Wl,--stack=$(mem)", ""] # $(name) will be automatically replaced with the source program name
-    runningCommands = [".\\$(name)", ""]
+    commandsArgs = {"mem": str(memoryLimits*1024*1024)}
+    compileCommands = ["g++ $(sourceFile).cpp -o $(sourceFile) -Wl,--stack=$(mem)", "g++ $(stdFile).cpp -o $(stdFile) -Wl,--stack=$(mem)"] # source / std
+    runningCommands = [".\\$(sourceFile)", ".\\$(stdFile)"]
     useFileIO = False
 
     # Checker
-    checkerFile = ""
-    compileCheckerCommands = "g++ $(cname).cpp -o $(cname)"
-    runningCheckerCommands =  ".\\$(cname) $(i) $(o) $(a)"
+    useCustomChecker = False
+    checkerFileArgs = {"checkerFile": ""}
+    compileCheckerCommands = "g++ $(checkerFile).cpp -o $(checkerFile)"
+    runningCheckerCommands =  ".\\$(checkerFile) $[input] $[output] $[ans]"
     useTestlib = True
 
     # File
@@ -44,12 +45,25 @@ class Config:
     dataOutputLimits = 200
 
     def __init__(self):
+        utilsObj = Utils()
+
         if self.compileCommands[1] == "":
             self.compileCommands[1] = self.compileCommands[0]
         if self.runningCommands[1] == "":
             self.runningCommands[1] = self.runningCommands[0]
-        self.compileCommands[0] = self.compileCommands[0].replace("$(mem)", str(self.memoryLimits*1024*1024))
-        self.compileCommands[1] = self.compileCommands[1].replace("$(mem)", str(self.memoryLimits*1024*1024))
+
+        compileFormat = self.globalArgs.copy()
+        compileFormat.update(self.commandsArgs)
+        self.compileCommands[0] = utilsObj.formatCommand(self.compileCommands[0], compileFormat)
+        self.compileCommands[1] = utilsObj.formatCommand(self.compileCommands[1], compileFormat)
+        self.runningCommands[0] = utilsObj.formatCommand(self.runningCommands[0], compileFormat)
+        self.runningCommands[1] = utilsObj.formatCommand(self.runningCommands[1], compileFormat)
+
+        if self.useCustomChecker:
+            checkerFormat = self.globalArgs.copy()
+            checkerFormat.update(self.checkerFileArgs)
+            self.compileCheckerCommands = utilsObj.formatCommand(self.compileCheckerCommands, checkerFormat)
+            self.runningCheckerCommands = utilsObj.formatCommand(self.runningCheckerCommands, checkerFormat)
 
 class Utils:
     def __init__(self):
@@ -79,6 +93,11 @@ class Utils:
         if self.memoryOut == True:
             retcode = 0
         return retcode
+
+    def formatCommand(self, command:str, fillList:dict):
+        for key, value in fillList.items():
+            command = command.replace("$({0})".format(key), "{0}".format(value))
+        return command
 
     def printData(self, data):
         configObj = Config()
@@ -144,9 +163,9 @@ class Data:
 
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
         if self.config.useFileIO==False:
-            os.system("{0} < {1} > {2}".format(self.config.runningCommands[1].replace("$(name)",self.config.stdFile),freInputFileName,freOutputFileName))
+            os.system("{0} < {1} > {2}".format(self.config.runningCommands[1],freInputFileName,freOutputFileName))
         else:
-            os.system("{0}".format(self.config.runningCommands[1].replace("$(name)",self.config.stdFile)))
+            os.system("{0}".format(self.config.runningCommands[1]))
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("rename {0} {1}".format(freOutputFileName,ansFileName))
 
@@ -167,7 +186,7 @@ class Data:
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
 
         utilsObject = Utils()
-        runCommand = "{0}".format(self.config.runningCommands[0].replace("$(name)",self.config.sourceFile))
+        runCommand = "{0}".format(self.config.runningCommands[0])
         if self.config.useFileIO==False:
             inputFilePipe = open("{0}".format(freInputFileName), "r")
             outputFilePipe = open("{0}".format(freOutputFileName), "w")
@@ -196,8 +215,8 @@ class Data:
             ans = ansFile.read()
             output = outputFile.read()
 
-            if self.config.checkerFile != "" and self.config.useTestlib:
-                runCheckerCommand = "{0} checkerResult".format(self.config.runningCheckerCommands.replace("$(cname)",self.config.checkerFile).replace("$(i)",freInputFileName).replace("$(a)",ansFileName).replace("$(o)",freOutputFileName))
+            if self.config.useCustomChecker and self.config.useTestlib:
+                runCheckerCommand = "{0} checkerResult".format(self.config.runningCheckerCommands.replace("$[input]",freInputFileName).replace("$[ans]",ansFileName).replace("$[output]",freOutputFileName))
                 checkerExitCode = os.system("{0}".format(runCheckerCommand))
                 if checkerExitCode == 0:
                     result = 1
@@ -210,8 +229,8 @@ class Data:
                     os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
                     os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
 
-            elif self.config.checkerFile != "":
-                runCheckerCommand = self.config.runningCheckerCommands.replace("$(cname)",self.config.checkerFile).replace("$(i)",freInputFileName).replace("$(a)",ansFileName).replace("$(o)",freOutputFileName)
+            elif self.config.useCustomChecker:
+                runCheckerCommand = self.config.runningCheckerCommands.replace("$[input]",freInputFileName).replace("$[ans]",ansFileName).replace("$[output]",freOutputFileName)
                 result = os.system("{0}".format(runCheckerCommand))
                 if result != 1:
                     os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
@@ -408,7 +427,7 @@ Enter a number to execute: """.format(Meta._version))
         self.mainPage()
 
 class Meta:
-    _version = "7.0.3"
+    _version = "8.0.0-dev1"
 
 
 if __name__ == "__main__":
