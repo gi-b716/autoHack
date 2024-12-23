@@ -14,11 +14,15 @@ if os.path.exists("dataGenerator.py"):
 		sys.exit(0)
 
 lasted = None
+channal = "LASTED"
+
+if "-dev" in sys.argv:
+	channal = "DEV"
 
 for mirror in mirrorList:
 	res = None
 	try:
-		res = requests.get("{0}/LASTED".format(mirror), timeout=5)
+		res = requests.get("{0}/{1}".format(mirror,channal), timeout=5)
 		lasted = str(res.content, "utf-8")
 	except:
 		pingTime.append(1000000.0)
