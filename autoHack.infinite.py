@@ -32,10 +32,11 @@ if not os.path.isdir(".autohack"):
 if config.compileBeforeRun==True:
     print("Compile program(s)")
     logger.info("Compile program(s)")
-    os.system("{0}".format(config.compileCommands[1]))
     os.system("{0}".format(config.compileCommands[0]))
+    os.system("{0}".format(config.compileCommands[1]))
     if config.useCustomChecker:
         os.system("{0}".format(config.compileCheckerCommands))
+    os.system("{0}".format(config.compileCommands[2]))
     print("Compile done.")
 
 os.system("rmdir /s/q wrongOutput")

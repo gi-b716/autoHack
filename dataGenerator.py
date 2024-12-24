@@ -22,7 +22,7 @@ class Config:
     # Program
     compileBeforeRun = True
     commandsArgs = {"mem": str(memoryLimits*1024*1024)}
-    compileCommands = ["g++ $(sourceFile).cpp -o $(sourceFile) -Wl,--stack=$(mem)", "g++ $(stdFile).cpp -o $(stdFile) -Wl,--stack=$(mem)"] # source / std
+    compileCommands = ["g++ $(sourceFile).cpp -o $(sourceFile) -Wl,--stack=$(mem)", "g++ $(stdFile).cpp -o $(stdFile) -Wl,--stack=$(mem)", ""] # source / std / other
     runningCommands = [".\\$(sourceFile)", ".\\$(stdFile)"]
     useFileIO = False
 
@@ -56,6 +56,7 @@ class Config:
         compileFormat.update(self.commandsArgs)
         self.compileCommands[0] = utilsObj.formatCommand(self.compileCommands[0], compileFormat)
         self.compileCommands[1] = utilsObj.formatCommand(self.compileCommands[1], compileFormat)
+        self.compileCommands[2] = utilsObj.formatCommand(self.compileCommands[2], compileFormat)
         self.runningCommands[0] = utilsObj.formatCommand(self.runningCommands[0], compileFormat)
         self.runningCommands[1] = utilsObj.formatCommand(self.runningCommands[1], compileFormat)
 
