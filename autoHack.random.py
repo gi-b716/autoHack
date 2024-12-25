@@ -41,7 +41,6 @@ if config.compileBeforeRun==True:
         os.system("{0}".format(config.compileCommands[0]))
     if config.useCustomChecker:
         os.system("{0}".format(config.compileCheckerCommands))
-    os.system("{0}".format(config.compileCommands[2]))
     print("Compile done.")
 
 md5Obj = hashlib.md5()

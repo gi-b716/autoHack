@@ -36,7 +36,6 @@ if config.compileBeforeRun==True:
     os.system("{0}".format(config.compileCommands[1]))
     if config.useCustomChecker:
         os.system("{0}".format(config.compileCheckerCommands))
-    os.system("{0}".format(config.compileCommands[2]))
     print("Compile done.")
 
 os.system("rmdir /s/q wrongOutput")
