@@ -38,7 +38,7 @@ if lasted == None:
 if os.path.exists("dataGenerator.py"):
 	import dataGenerator
 	metaObject = dataGenerator.Meta()
-	if lasted == metaObject._version:
+	if lasted == metaObject._version and "-force" not in sys.argv:
 		print("autoHack is up to date.")
 		sys.exit(0)
 
