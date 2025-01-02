@@ -359,8 +359,7 @@ class GUI:
         os.chdir("{0}".format(directory))
 
     def viewDataSet(self):
-        toolsObj = Tools()
-        dataSetObj = toolsObj.dataSet()
+        dataSetObj = Tools().dataSet()
         dataSetObj.refresh()
         for dataId in range(len(dataSetObj.dataSetList)):
             data = dataSetObj.dataSetList[dataId]
