@@ -363,7 +363,7 @@ class GUI:
         dataSetObj.refresh()
         for dataId in range(len(dataSetObj.dataSetList)):
             data = dataSetObj.dataSetList[dataId]
-            dataName = data[:-4].split("-")
+            dataName = data[:-4].split("-", maxsplit=1)
             print("{0}. {1}".format(dataId, time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(float(dataName[0])))), end="")
             if len(dataName) == 2:
                 print(" | {0}".format(dataName[1]))
