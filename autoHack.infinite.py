@@ -34,8 +34,11 @@ if config.compileBeforeRun==True:
     logger.info("Compile program(s)")
     os.system("{0}".format(config.compileCommands[0]))
     os.system("{0}".format(config.compileCommands[1]))
-    if config.useCustomChecker:
-        os.system("{0}".format(config.compileCheckerCommands))
+    if config.useCustomChecker: os.system("{0}".format(config.compileCheckerCommands))
+    if config.useInteractor:
+        os.system("{0}".format(config.compileCommandsExtra[1]))
+        os.system("{0}".format(config.compileCommandsExtra[0]))
+        if config.useMiddleFile: os.system("{0}".format(config.compileCommandsExtra[2]))
     print("Compile done.")
 
 os.system("rmdir /s/q wrongOutput")
