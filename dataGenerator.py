@@ -469,7 +469,7 @@ Enter a number to execute: """.format(Meta._version))
         self.mainPage()
 
 class Meta:
-    _version = "8.0.0-dev1"
+    _version = "8.0.0-dev2"
 
 
 if __name__ == "__main__":
