@@ -300,7 +300,7 @@ class Data:
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("del {0} /q".format(freOutputFileName))
 
-        return [result,timeOutTag,self.config.timeLimits,ans,output,exitCode,memoryOutTag,self.config.memoryLimits,checkerExitCode, resultLevel]
+        return [result,timeOutTag,self.config.timeLimits,ans,output,exitCode,memoryOutTag,self.config.memoryLimits,checkerExitCode,resultLevel]
 
 class Tools:
     class dataSet:

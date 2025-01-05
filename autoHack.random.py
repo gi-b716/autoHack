@@ -96,7 +96,7 @@ else:
     logger.info("Skip generate")
 
 # Start random hacking
-if config.skipRun==False: # TODO
+if config.skipRun==False:
     logger.info("Start random hacking...")
     os.system("rmdir /s/q wrongOutput")
     if config.saveWrongOutput==True:
@@ -131,20 +131,26 @@ if config.skipRun==False: # TODO
                 diffCount += 1
 
         elif result[1]==True:
-            print("Time Limit Exceeded!")
-            logger.warning("Time Limit Exceeded! Exceed {0} ms".format(result[2]))
+            logData = "Time Limit Exceeded! Exceed {0} ms".format(result[2])
+            if config.useInteractor: logData="Time Limit Exceeded on part {0}! Exceed {1} ms".format(result[9],result[2])
+            print("{0}".format(logData))
+            logger.warning("{0}".format(logData))
             time.sleep(config.waitTime)
             diffCount += 1
 
         elif result[5]!=0:
-            print("Runtime Error! Exit code: {0}".format(result[5]))
-            logger.warning("Runtime Error! Exit code: {0}".format(result[5]))
+            logData = "Runtime Error! Exit code: {0}".format(result[5])
+            if config.useInteractor: logData="Runtime Error on part {0}! Exit code: {1}".format(result[9],result[5])
+            print("{0}".format(logData))
+            logger.warning("{0}".format(logData))
             time.sleep(config.waitTime)
             diffCount += 1
 
         elif result[6]==True:
-            print("Memory Limit Exceeded!")
-            logger.warning("Memory Limit Exceeded! Exceed {0} MB".format(result[7]))
+            logData = "Memory Limit Exceeded! Exceed {0} MB".format(result[7])
+            if config.useInteractor: logData="Memory Limit Exceeded on part {0}! Exceed {1} MB".format(result[9],result[7])
+            print("{0}".format(logData))
+            logger.warning("{0}".format(logData))
             time.sleep(config.waitTime)
             diffCount += 1
 
