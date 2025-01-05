@@ -36,7 +36,7 @@ class Config:
     useInteractor = False
     useMiddleFile = False
     middleFileName = ("out.tmp", "in.tmp")
-    interactorArgs = {"sourceFile2": "", "stdFile2": "", "middleFile": ""}
+    interactorArgs = {"sourceFile2": "", "stdFile2": "", "middleFile": "", "mem": str(memoryLimits*1024*1024)}
     compileCommandsExtra = ["g++ $(sourceFile2).cpp -o $(sourceFile2) -Wl,--stack=$(mem)", "g++ $(stdFile2).cpp -o $(stdFile2) -Wl,--stack=$(mem)", "g++ $(middleFile).cpp -o $(middleFile)"]
     runningCommandsExtra = [".\\$(sourceFile2)", ".\\$(stdFile2)", ".\\$(middleFile)"]
 
@@ -53,9 +53,6 @@ class Config:
 
     def __init__(self):
         utilsObj = Utils()
-
-        if self.compileCommands[1] == "": self.compileCommands[1] = self.compileCommands[0]
-        if self.runningCommands[1] == "": self.runningCommands[1] = self.runningCommands[0]
 
         compileFormat = self.globalArgs.copy()
         compileFormat.update(self.commandsArgs)
@@ -127,6 +124,7 @@ class Utils:
         print("\nAns:")
         with open(refer[1],"r") as ansFile:
             print("{0}".format(self.printData(ansFile.read())))
+        print()
 
         os.system("del {0} /q".format(refer[0]))
         os.system("del {0} /q".format(refer[1]))
@@ -171,11 +169,22 @@ class Data:
             inputFile.write("{0} {1}".format(a,b))
 
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
-        if self.config.useFileIO==False:
-            os.system("{0} < {1} > {2}".format(self.config.runningCommands[1],freInputFileName,freOutputFileName))
+        if self.config.useInteractor:
+            if self.config.useFileIO: os.system("{0}".format(self.config.runningCommands[1]))
+            else: os.system("{0} < {1} > {2}".format(self.config.runningCommands[1],freInputFileName,self.config.middleFileName[0]))
+            if self.config.useMiddleFile:
+                if self.config.useFileIO: os.system("{0}".format(self.config.runningCommandsExtra[2]))
+                else: os.system("{0} < {1} > {2}".format(self.config.runningCommandsExtra[2], self.config.middleFileName[0], self.config.middleFileName[1]))
+            else: os.system("copy {0} {1}".format(self.config.middleFileName[0],self.config.middleFileName[1]))
+            if self.config.useFileIO: os.system("{0}".format(self.config.runningCommandsExtra[1]))
+            else: os.system("{0} < {1} > {2}".format(self.config.runningCommandsExtra[1],self.config.middleFileName[1],freOutputFileName))
+            os.system("del {0} /q".format(self.config.middleFileName[0]))
+            os.system("del {0} /q".format(self.config.middleFileName[1]))
         else:
-            os.system("{0}".format(self.config.runningCommands[1]))
-        # TODO Add interactor
+            if self.config.useFileIO==False:
+                os.system("{0} < {1} > {2}".format(self.config.runningCommands[1],freInputFileName,freOutputFileName))
+            else:
+                os.system("{0}".format(self.config.runningCommands[1]))
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("rename {0} {1}".format(freOutputFileName,ansFileName))
 
@@ -237,7 +246,10 @@ class Data:
 
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
 
-        if self.config.useInteractor: timeOutTag, memoryOutTag, exitCode, resultLevel = self.runningForInteractor(freInputFileName, freOutputFileName)
+        if self.config.useInteractor:
+            timeOutTag, memoryOutTag, exitCode, resultLevel = self.runningForInteractor(freInputFileName, freOutputFileName)
+            os.system("del {0} /q".format(self.config.middleFileName[0]))
+            os.system("del {0} /q".format(self.config.middleFileName[1]))
         else: timeOutTag, memoryOutTag, exitCode = self.runCode(freInputFileName, freOutputFileName, self.config.runningCommands[0])
 
         if timeOutTag==False and exitCode==0 and memoryOutTag==False:
