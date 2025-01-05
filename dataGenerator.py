@@ -33,6 +33,13 @@ class Config:
     runningCheckerCommands =  ".\\$(checkerFile) $[input] $[output] $[ans]"
     useTestlib = True
 
+    useInteractor = False
+    useMiddleFile = False
+    middleFileName = ("out.tmp", "in.tmp")
+    interactorArgs = {"sourceFile2": "", "stdFile2": "", "middleFile": ""}
+    compileCommandsExtra = ["g++ $(sourceFile2).cpp -o $(sourceFile2) -Wl,--stack=$(mem)", "g++ $(stdFile2).cpp -o $(stdFile2) -Wl,--stack=$(mem)", "g++ $(middleFile).cpp -o $(middleFile)"]
+    runningCommandsExtra = [".\\$(sourceFile2)", ".\\$(stdFile2)", ".\\$(middleFile)"]
+
     # File
     dataFileName = (("hack","in"),("hack","ans"))
     fileName = (("plus","in"),("plus","out"))
@@ -47,23 +54,25 @@ class Config:
     def __init__(self):
         utilsObj = Utils()
 
-        if self.compileCommands[1] == "":
-            self.compileCommands[1] = self.compileCommands[0]
-        if self.runningCommands[1] == "":
-            self.runningCommands[1] = self.runningCommands[0]
+        if self.compileCommands[1] == "": self.compileCommands[1] = self.compileCommands[0]
+        if self.runningCommands[1] == "": self.runningCommands[1] = self.runningCommands[0]
 
         compileFormat = self.globalArgs.copy()
         compileFormat.update(self.commandsArgs)
-        self.compileCommands[0] = utilsObj.formatCommand(self.compileCommands[0], compileFormat)
-        self.compileCommands[1] = utilsObj.formatCommand(self.compileCommands[1], compileFormat)
-        self.runningCommands[0] = utilsObj.formatCommand(self.runningCommands[0], compileFormat)
-        self.runningCommands[1] = utilsObj.formatCommand(self.runningCommands[1], compileFormat)
+        for i in range(len(self.compileCommands)): self.compileCommands[i] = utilsObj.formatCommand(self.compileCommands[i], compileFormat)
+        for i in range(len(self.compileCommands)): self.runningCommands[i] = utilsObj.formatCommand(self.runningCommands[i], compileFormat)
 
         if self.useCustomChecker:
             checkerFormat = self.globalArgs.copy()
             checkerFormat.update(self.checkerFileArgs)
             self.compileCheckerCommands = utilsObj.formatCommand(self.compileCheckerCommands, checkerFormat)
             self.runningCheckerCommands = utilsObj.formatCommand(self.runningCheckerCommands, checkerFormat)
+
+        if self.useInteractor:
+            interactorFormat = self.globalArgs.copy()
+            interactorFormat.update(self.interactorArgs)
+            for i in range(len(self.compileCommandsExtra)): self.compileCommandsExtra[i] = utilsObj.formatCommand(self.compileCommandsExtra[i], interactorFormat)
+            for i in range(len(self.runningCommandsExtra)): self.runningCommandsExtra[i] = utilsObj.formatCommand(self.runningCommandsExtra[i], interactorFormat)
 
 class Utils:
     def __init__(self):
@@ -166,27 +175,15 @@ class Data:
             os.system("{0} < {1} > {2}".format(self.config.runningCommands[1],freInputFileName,freOutputFileName))
         else:
             os.system("{0}".format(self.config.runningCommands[1]))
+        # TODO Add interactor
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("rename {0} {1}".format(freOutputFileName,ansFileName))
 
-    def runHacking(self, id):
-        inputFileName = self.getFileName(id)[0]
-        ansFileName = self.getFileName(id)[1]
-        freInputFileName = self.getFileName(id)[2]
-        freOutputFileName = self.getFileName(id)[3]
-
+    def runCode(self, freInputFileName, freOutputFileName, runCommand):
+        utilsObject = Utils()
         timeOutTag = False
         memoryOutTag = False
         exitCode = 0
-        checkerExitCode = 0
-        result = 0
-        ans = None
-        output = None
-
-        os.system("rename {0} {1}".format(inputFileName,freInputFileName))
-
-        utilsObject = Utils()
-        runCommand = "{0}".format(self.config.runningCommands[0])
         if self.config.useFileIO==False:
             inputFilePipe = open("{0}".format(freInputFileName), "r")
             outputFilePipe = open("{0}".format(freOutputFileName), "w")
@@ -199,7 +196,6 @@ class Data:
             if not timeOutTag:
                 exitCode = self.runCodeResult
                 memoryOutTag = utilsObject.memoryOut
-
         else:
             try:
                 self.runCodeResult = utilsObject.run("{0}".format(runCommand),timeout=self.config.timeLimits/1000,memoryLimits=self.config.memoryLimits*1024*1024)
@@ -208,6 +204,41 @@ class Data:
             if not timeOutTag:
                 exitCode = self.runCodeResult
                 memoryOutTag = utilsObject.memoryOut
+        return [timeOutTag,memoryOutTag,exitCode]
+
+    def runningForInteractor(self, freInputFileName, freOutputFileName):
+        timeOutTag = False
+        memoryOutTag = False
+        exitCode = 0
+        timeOutTag, memoryOutTag, exitCode = self.runCode(freInputFileName, self.config.middleFileName[0], self.config.runningCommands[0])
+        if timeOutTag or memoryOutTag or exitCode != 0: return [timeOutTag,memoryOutTag,exitCode,1]
+        if self.config.useMiddleFile:
+            if self.config.useFileIO: os.system("{0}".format(self.config.runningCommandsExtra[2]))
+            else: os.system("{0} < {1} > {2}".format(self.config.runningCommandsExtra[2], self.config.middleFileName[0], self.config.middleFileName[1]))
+        else: os.system("copy {0} {1}".format(self.config.middleFileName[0],self.config.middleFileName[1]))
+        timeOutTag, memoryOutTag, exitCode = self.runCode(self.config.middleFileName[1], freOutputFileName, self.config.runningCommandsExtra[0])
+        if timeOutTag or memoryOutTag or exitCode != 0: return [timeOutTag,memoryOutTag,exitCode,2]
+        return [timeOutTag,memoryOutTag,exitCode,0]
+
+    def runHacking(self, id):
+        inputFileName = self.getFileName(id)[0]
+        ansFileName = self.getFileName(id)[1]
+        freInputFileName = self.getFileName(id)[2]
+        freOutputFileName = self.getFileName(id)[3]
+
+        timeOutTag = False
+        memoryOutTag = False
+        exitCode = 0
+        resultLevel = 0
+        checkerExitCode = 0
+        result = 0
+        ans = None
+        output = None
+
+        os.system("rename {0} {1}".format(inputFileName,freInputFileName))
+
+        if self.config.useInteractor: timeOutTag, memoryOutTag, exitCode, resultLevel = self.runningForInteractor(freInputFileName, freOutputFileName)
+        else: timeOutTag, memoryOutTag, exitCode = self.runCode(freInputFileName, freOutputFileName, self.config.runningCommands[0])
 
         if timeOutTag==False and exitCode==0 and memoryOutTag==False:
             ansFile = open("{0}".format(ansFileName), "r")
@@ -269,7 +300,7 @@ class Data:
         os.system("rename {0} {1}".format(freInputFileName,inputFileName))
         os.system("del {0} /q".format(freOutputFileName))
 
-        return [result,timeOutTag,self.config.timeLimits,ans,output,exitCode,memoryOutTag,self.config.memoryLimits,checkerExitCode]
+        return [result,timeOutTag,self.config.timeLimits,ans,output,exitCode,memoryOutTag,self.config.memoryLimits,checkerExitCode, result]
 
 class Tools:
     class dataSet:

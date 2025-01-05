@@ -35,12 +35,13 @@ if not os.path.isdir(".autohack"):
 if config.compileBeforeRun==True:
     print("Compile program(s)")
     logger.info("Compile program(s)")
-    if config.skipGenerate==False:
-        os.system("{0}".format(config.compileCommands[1]))
-    if config.skipRun==False:
-        os.system("{0}".format(config.compileCommands[0]))
-    if config.useCustomChecker:
-        os.system("{0}".format(config.compileCheckerCommands))
+    if config.skipGenerate==False: os.system("{0}".format(config.compileCommands[1]))
+    if config.skipRun==False: os.system("{0}".format(config.compileCommands[0]))
+    if config.useCustomChecker: os.system("{0}".format(config.compileCheckerCommands))
+    if config.useInteractor:
+        if config.skipGenerate==False: os.system("{0}".format(config.compileCommandsExtra[1]))
+        if config.skipRun==False: os.system("{0}".format(config.compileCommandsExtra[0]))
+        if config.useMiddleFile: os.system("{0}".format(config.compileCommandsExtra[2]))
     print("Compile done.")
 
 md5Obj = hashlib.md5()
@@ -95,7 +96,7 @@ else:
     logger.info("Skip generate")
 
 # Start random hacking
-if config.skipRun==False:
+if config.skipRun==False: # TODO
     logger.info("Start random hacking...")
     os.system("rmdir /s/q wrongOutput")
     if config.saveWrongOutput==True:

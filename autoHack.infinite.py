@@ -49,7 +49,7 @@ if config.previewHackDataTime > 0 and not config.skipGenerate:
     time.sleep(config.previewHackDataTime)
     logger.info("Preview hack data.")
 
-while True:
+while True: # TODO
     globalCount += 1
     os.system("cls")
     refer = data.getFileName(diffCount)
