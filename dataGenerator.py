@@ -259,7 +259,7 @@ class Data:
             output = outputFile.read()
 
             if self.config.useCustomChecker and self.config.useTestlib:
-                runCheckerCommand = "{0} checkerResult".format(self.config.runningCheckerCommands.replace("$[input]",freInputFileName).replace("$[ans]",ansFileName).replace("$[output]",freOutputFileName))
+                runCheckerCommand = "{0} .\\.autohack\\checkerResult".format(self.config.runningCheckerCommands.replace("$[input]",freInputFileName).replace("$[ans]",ansFileName).replace("$[output]",freOutputFileName))
                 checkerExitCode = os.system("{0}".format(runCheckerCommand))
                 if checkerExitCode == 0:
                     result = 1

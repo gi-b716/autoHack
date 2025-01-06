@@ -116,10 +116,10 @@ if config.skipRun==False:
         os.system("cls")
 
         if config.useCustomChecker and config.useTestlib:
-            checkerResFile = open("checkerResult","r")
+            checkerResFile = open(".\\.autohack\\checkerResult","r")
             checkerRes = checkerResFile.read()
             checkerResFile.close()
-            os.system("del checkerResult /q")
+            os.system("del .\\.autohack\\checkerResult /q")
             print("{0}".format(checkerRes))
             logger.debug("{0} Exit code: {1}.".format(checkerRes.replace("\n"," | "),result[8]))
             if result[0]==-1:
