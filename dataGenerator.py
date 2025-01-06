@@ -11,8 +11,8 @@ import os
 class Config:
     numberOfSamples = 10
     globalArgs = {"sourceFile": "source", "stdFile": "std"}
-    timeLimits = 1000 # ms
-    memoryLimits = 1024 # MB
+    timeLimits = 1000 # ms / Set to negative to cancel
+    memoryLimits = 1024 # MB / Set to negative to cancel
     waitTime = 3.0 # s
     ignoreSomeCharactersAtTheEnd = True
     saveWrongOutput = True
@@ -79,7 +79,7 @@ class Utils:
         psutilProcess = psutil.Process(pid)
         while True:
             try:
-                if psutilProcess.memory_info().vms > memoryLimits:
+                if psutilProcess.memory_info().vms > memoryLimits and memoryLimits >= 0:
                     self.memoryOut = True
                     os.system("taskkill /F /PID {0}".format(pid))
                     return
@@ -87,6 +87,7 @@ class Utils:
                 return
 
     def run(self, *popenargs, timeout=None, memoryLimits, **kwargs):
+        if timeout != None and timeout < 0: timeout=None
         with subprocess.Popen(*popenargs, **kwargs) as process:
             monitor = threading.Thread(target=self.memoryMonitor, args=(process.pid, memoryLimits, ))
             monitor.start()
