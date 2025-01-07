@@ -3,6 +3,14 @@ import zipfile
 import sys
 import os
 
+if "-help" or "-h" in sys.argv:
+	print("""autoHack Automatic Upgrade Module Help
+
+-help / -h: Display this help message
+-dev: Receive updates for dev versions
+-force: Force update to the latest version of the selected channel""")
+	sys.exit(0)
+
 mirrorList = ["https://autohack.netlify.app/", "https://gi-b716.github.io/autoHack/", "https://autohack.pages.dev/"]
 pingTime = []
 
