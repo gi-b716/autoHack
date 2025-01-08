@@ -42,6 +42,7 @@ if config.compileBeforeRun==True:
         if config.skipGenerate==False: os.system("{0}".format(config.compileCommandsExtra[1]))
         if config.skipRun==False: os.system("{0}".format(config.compileCommandsExtra[0]))
         if config.useMiddleFile: os.system("{0}".format(config.compileCommandsExtra[2]))
+    if config.compileCustomGenerator: os.system("{0}".format(config.compileGeneratorCommands))
     print("Compile done.")
 
 md5Obj = hashlib.md5()

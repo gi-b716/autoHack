@@ -39,6 +39,7 @@ if config.compileBeforeRun==True:
         os.system("{0}".format(config.compileCommandsExtra[1]))
         os.system("{0}".format(config.compileCommandsExtra[0]))
         if config.useMiddleFile: os.system("{0}".format(config.compileCommandsExtra[2]))
+    if config.compileCustomGenerator: os.system("{0}".format(config.compileGeneratorCommands))
     print("Compile done.")
 
 os.system("rmdir /s/q wrongOutput")

@@ -33,6 +33,11 @@ class Config:
     runningCheckerCommands =  ".\\$(checkerFile) $[input] $[output] $[ans]"
     useTestlib = True
 
+    compileCustomGenerator = False
+    generatorArgs = {"generatorFile": ""}
+    compileGeneratorCommands = "g++ $(generatorFile).cpp -o $(generatorFile)"
+    runningGeneratorCommands = ".\\$(generatorFile) $[args]"
+
     useInteractor = False
     useMiddleFile = False
     middleFileName = ("out.tmp", "in.tmp")
@@ -64,6 +69,11 @@ class Config:
             checkerFormat.update(self.checkerFileArgs)
             self.compileCheckerCommands = utilsObj.formatCommand(self.compileCheckerCommands, checkerFormat)
             self.runningCheckerCommands = utilsObj.formatCommand(self.runningCheckerCommands, checkerFormat)
+
+        generatorFormat = self.globalArgs.copy()
+        generatorFormat.update(self.generatorArgs)
+        if self.compileCustomGenerator: self.compileGeneratorCommands = utilsObj.formatCommand(self.compileGeneratorCommands, generatorFormat)
+        self.runningGeneratorCommands = utilsObj.formatCommand(self.runningGeneratorCommands, generatorFormat)
 
         if self.useInteractor:
             interactorFormat = self.globalArgs.copy()
@@ -164,7 +174,11 @@ class Data:
         freInputFileName = self.getFileName(id)[2]
         freOutputFileName = self.getFileName(id)[3]
 
-        with open(inputFileName, "w") as inputFile:
+        def useGenerator(customArgs):
+            if self.config.useFileIO: os.system("{0}".format(self.config.runningGeneratorCommands.replace("$[args]",customArgs)))
+            else: os.system("{0} >> {1}".format(self.config.runningGeneratorCommands.replace("$[args]",customArgs),inputFileName))
+
+        with open(inputFileName, "a") as inputFile:
             a = random.randint(1,1000000000)
             b = random.randint(1,1000000000)
             inputFile.write("{0} {1}".format(a,b))
