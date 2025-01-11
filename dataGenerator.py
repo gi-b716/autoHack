@@ -174,7 +174,7 @@ class Data:
         freInputFileName = self.getFileName(id)[2]
         freOutputFileName = self.getFileName(id)[3]
 
-        def useGenerator(customArgs):
+        def useGenerator(customArgs=""):
             if self.config.useFileIO: os.system("{0}".format(self.config.runningGeneratorCommands.replace("$[args]",customArgs)))
             else: os.system("{0} >> {1}".format(self.config.runningGeneratorCommands.replace("$[args]",customArgs),inputFileName))
 
