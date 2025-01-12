@@ -150,13 +150,13 @@ class Utils:
         with open("testlib.h", "w") as testlibFile:
             testlibFile.write(str(testlib.content, "utf-8"))
         res = input("Download testlib-{0}.zip? (y/[n]): ".format(lasted))
+        print()
         if res != 'y':
             return
         downloadUrl = "https://github.com/MikeMirzayanov/testlib/releases/download/{0}/testlib-{0}.zip".format(lasted)
         zipFile = requests.get("{0}".format(downloadUrl))
         with open("testlib-{0}.zip".format(lasted), "wb") as zf:
             zf.write(zipFile.content)
-        print()
 
 class Data:
     def __init__(self, config:Config):
