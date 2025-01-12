@@ -156,6 +156,7 @@ class Utils:
         zipFile = requests.get("{0}".format(downloadUrl))
         with open("testlib-{0}.zip".format(lasted), "wb") as zf:
             zf.write(zipFile.content)
+        print()
 
 class Data:
     def __init__(self, config:Config):

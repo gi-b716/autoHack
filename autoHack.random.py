@@ -71,6 +71,7 @@ if os.path.exists(".\\.autohack\\keep"):
                 config.skipGenerate = True
 
 if config.previewHackDataTime > 0 and not config.skipGenerate:
+    print()
     utils.previewHackData()
     time.sleep(config.previewHackDataTime)
     logger.info("Preview hack data.")

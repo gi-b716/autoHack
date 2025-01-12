@@ -50,6 +50,7 @@ os.system("md hackData")
 logger.info("Cleaning wrong output history")
 
 if config.previewHackDataTime > 0 and not config.skipGenerate:
+    print()
     utils.previewHackData()
     time.sleep(config.previewHackDataTime)
     logger.info("Preview hack data.")
