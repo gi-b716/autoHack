@@ -36,7 +36,7 @@ class Config:
     compileCustomGenerator = False
     generatorArgs = {"generatorFile": ""}
     compileGeneratorCommands = "g++ $(generatorFile).cpp -o $(generatorFile)"
-    runningGeneratorCommands = ".\\$(generatorFile) $[args]"
+    runningGeneratorCommands = ".\\$(generatorFile) $[args0]"
 
     useInteractor = False
     useMiddleFile = False
@@ -174,9 +174,11 @@ class Data:
         freInputFileName = self.getFileName(id)[2]
         freOutputFileName = self.getFileName(id)[3]
 
-        def useGenerator(customArgs=""):
-            if self.config.useFileIO: os.system("{0}".format(self.config.runningGeneratorCommands.replace("$[args]",customArgs)))
-            else: os.system("{0} >> {1}".format(self.config.runningGeneratorCommands.replace("$[args]",customArgs),inputFileName))
+        def useGenerator(*customArgs):
+            runningCommand = self.config.runningGeneratorCommands
+            for i in range(len(customArgs)): runningCommand = runningCommand.replace("$[args{0}]".format(i),"{0}".format(customArgs[i]))
+            if self.config.useFileIO: os.system("{0}".format(runningCommand))
+            else: os.system("{0} >> {1}".format(runningCommand,inputFileName))
 
         with open(inputFileName, "a") as inputFile:
             a = random.randint(1,1000000000)
