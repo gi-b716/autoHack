@@ -118,22 +118,7 @@ if config.skipRun==False:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
 
-        if config.useCustomChecker and config.useTestlib:
-            checkerResFile = open(".\\.autohack\\checkerResult","r")
-            checkerRes = checkerResFile.read()
-            checkerResFile.close()
-            os.system("del .\\.autohack\\checkerResult /q")
-            print("{0}".format(checkerRes))
-            logger.debug("{0} Exit code: {1}.".format(checkerRes.replace("\n"," | "),result[8]))
-            if result[0]==-1:
-                print("Checker failed!")
-                os.system("{0}".format(config.commandAtEnd))
-                sys.exit(0)
-            if result[0]!=1:
-                time.sleep(config.waitTime)
-                diffCount += 1
-
-        elif result[1]==True:
+        if result[1]==True:
             logData = "Time Limit Exceeded! Exceed {0} ms".format(result[2])
             if config.useInteractor: logData="Time Limit Exceeded on part {0}! Exceed {1} ms".format(result[9],result[2])
             print("{0}".format(logData))
@@ -156,6 +141,21 @@ if config.skipRun==False:
             logger.warning("{0}".format(logData))
             time.sleep(config.waitTime)
             diffCount += 1
+
+        elif config.useCustomChecker and config.useTestlib:
+            checkerResFile = open(".\\.autohack\\checkerResult","r")
+            checkerRes = checkerResFile.read()
+            checkerResFile.close()
+            os.system("del .\\.autohack\\checkerResult /q")
+            print("{0}".format(checkerRes))
+            logger.debug("{0} Exit code: {1}.".format(checkerRes.replace("\n"," | "),result[8]))
+            if result[0]==-1:
+                print("Checker failed!")
+                os.system("{0}".format(config.commandAtEnd))
+                sys.exit(0)
+            if result[0]!=1:
+                time.sleep(config.waitTime)
+                diffCount += 1
 
         elif result[0]==0:
             print("Catch diff on data {0}!\nAns:\n{1}\nOutput:\n{2}\n".format(samplesId,utils.printData(result[3]),utils.printData(result[4])))

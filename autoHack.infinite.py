@@ -67,28 +67,7 @@ while True:
     logger.info("Judging data {0}".format(globalCount))
     result = data.runHacking(diffCount)
 
-    if config.useCustomChecker and config.useTestlib:
-        checkerResFile = open(".\\.autohack\\checkerResult","r")
-        checkerRes = checkerResFile.read()
-        checkerResFile.close()
-        os.system("del .\\.autohack\\checkerResult /q")
-        print("{0}".format(checkerRes))
-        logger.debug("{0} Exit code: {1}.".format(checkerRes.replace("\n"," | "),result[8]))
-        if result[0]==-1:
-            os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
-            os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
-            os.system("cls")
-            print("Checker failed!")
-            os.system("{0}".format(config.commandAtEnd))
-            sys.exit(0)
-        if result[0]!=1:
-            os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
-            os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
-            os.system("cls")
-            time.sleep(config.waitTime)
-            diffCount += 1
-
-    elif result[1]==True:
+    if result[1]==True:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
@@ -120,6 +99,27 @@ while True:
         logger.warning("{0}".format(logData))
         time.sleep(config.waitTime)
         diffCount += 1
+
+    elif config.useCustomChecker and config.useTestlib:
+        checkerResFile = open(".\\.autohack\\checkerResult","r")
+        checkerRes = checkerResFile.read()
+        checkerResFile.close()
+        os.system("del .\\.autohack\\checkerResult /q")
+        print("{0}".format(checkerRes))
+        logger.debug("{0} Exit code: {1}.".format(checkerRes.replace("\n"," | "),result[8]))
+        if result[0]==-1:
+            os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
+            os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
+            os.system("cls")
+            print("Checker failed!")
+            os.system("{0}".format(config.commandAtEnd))
+            sys.exit(0)
+        if result[0]!=1:
+            os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
+            os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
+            os.system("cls")
+            time.sleep(config.waitTime)
+            diffCount += 1
 
     elif result[0]==0:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
