@@ -393,6 +393,33 @@ class Tools:
         def delete(self, id):
             os.system("del .\\.autohack\\dataset\\{0}".format(self.dataSetList[id]))
 
+    class logs:
+        def __init__(self, mode):
+            self.mode = mode
+
+        def displayLastedLog(self):
+            if os.path.isdir(".autohack\\logs\\{0}".format(self.mode)):
+                logs = os.listdir(".autohack\\logs\\{0}".format(self.mode))
+                if len(logs) == 0: print("No logs exist.\n")
+                else:
+                    lastedLog = logs[-1]
+                    os.system("del hackLog.{0}.log /q".format(self.mode))
+                    os.system("copy .autohack\\logs\\{0}\\{1} .".format(self.mode,lastedLog))
+                    os.system("rename {0} hackLog.{1}.log".format(lastedLog,self.mode))
+                    os.system("start hackLog.{0}.log".format(self.mode))
+            else: print("No logs exist.\n")
+
+        def exportLogs(self):
+            exportFile = open("hackLog.{0}.log".format(self.mode), "w")
+            if os.path.isdir(".autohack\\logs\\{0}".format(self.mode)):
+                logs = os.listdir(".autohack\\logs\\{0}".format(self.mode))
+                for log in logs:
+                    logFile = open(".autohack\\logs\\{0}\\{1}".format(self.mode,log), "r")
+                    exportFile.write(logFile.read())
+                    logFile.close()
+            exportFile.close()
+            print("Ok. See hackLog.{0}.log\n".format(self.mode))
+
 class GUI:
     def __init__(self):
         self.configObj = Config()
@@ -453,6 +480,36 @@ class GUI:
             else:
                 self.viewDataSet()
 
+    def logUtils(self):
+        sendBackInformation = input("""Log utils:
+1. Display the latest hackLog.infinite.log
+2. Display the latest hackLog.random.log
+3. Export all hackLog.infinite.log
+4. Export all hackLog.random.log
+5. Clear logs
+
+q. Exit
+Enter a number to execute: """.format(Meta._version))
+        print()
+
+        randomLogsObj = Tools().logs("random")
+        infiniteLogsObj = Tools().logs("infinite")
+
+        if sendBackInformation == '1':
+            infiniteLogsObj.displayLastedLog()
+        elif sendBackInformation == '2':
+            randomLogsObj.displayLastedLog()
+        elif sendBackInformation == '3':
+            infiniteLogsObj.exportLogs()
+        elif sendBackInformation == '4':
+            randomLogsObj.exportLogs()
+        elif sendBackInformation == '5':
+            os.system("rmdir /s/q .autohack\\logs")
+        elif sendBackInformation == 'q':
+            return
+
+        self.logUtils()
+
     def mainPage(self):
         sendBackInformation = input("""autoHack (GUI version) v{0}
 1. Create a new instance using _create.py
@@ -461,6 +518,7 @@ class GUI:
 4. Preview hack data
 5. Download testlib
 6. View dataset
+7. Log utils
 
 q. Exit
 Enter a number to execute: """.format(Meta._version))
@@ -480,6 +538,8 @@ Enter a number to execute: """.format(Meta._version))
             utilsObject.getLastedTestlib()
         elif sendBackInformation == '6':
             self.viewDataSet()
+        elif sendBackInformation == '7':
+            self.logUtils()
         elif sendBackInformation == 'q':
             sys.exit(0)
 

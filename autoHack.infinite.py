@@ -11,12 +11,17 @@ utils = dataGenerator.Utils()
 globalCount = 0
 diffCount = 0
 
+if not os.path.isdir(".autohack"):
+    os.mkdir(".autohack")
+    os.system("attrib +h .autohack")
+
 # Init logger
+os.system(".autohack\\logs\\infinite")
 logger = logging.getLogger('logger')
 logger.setLevel(logging.DEBUG)
-logFile = logging.FileHandler("hackLog.infinite.log")
-logFile.setLevel(logging.DEBUG)
 logFormatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logFile = logging.FileHandler(".autohack\\logs\\infinite\\hackLog.infinite.{0}.log".format(time.strftime("%Y-%m-%d_%H-%M-%S",time.localtime(time.time()))))
+logFile.setLevel(logging.DEBUG)
 logFile.setFormatter(logFormatter)
 logger.addHandler(logFile)
 logger.info("Init logger")
@@ -24,10 +29,6 @@ logger.info("Init logger")
 # Init output
 os.system("echo off")
 os.system("cls")
-
-if not os.path.isdir(".autohack"):
-    os.mkdir(".autohack")
-    os.system("attrib +h .autohack")
 
 if config.compileBeforeRun==True:
     print("Compile program(s)")
