@@ -16,7 +16,7 @@ if not os.path.isdir(".autohack"):
     os.system("attrib +h .autohack")
 
 # Init logger
-os.system(".autohack\\logs\\infinite")
+os.system("mkdir .autohack\\logs\\infinite")
 logger = logging.getLogger('logger')
 logger.setLevel(logging.DEBUG)
 logFormatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
