@@ -490,7 +490,7 @@ class GUI:
 5. Clear logs
 
 q. Exit
-Enter a number to execute: """.format(Meta._version))
+Enter a number to execute: """)
         print()
 
         randomLogsObj = Tools().logs("random")
