@@ -61,8 +61,10 @@ class Config:
 
         compileFormat = self.globalArgs.copy()
         compileFormat.update(self.commandsArgs)
-        for i in range(len(self.compileCommands)): self.compileCommands[i] = utilsObj.formatCommand(self.compileCommands[i], compileFormat)
-        for i in range(len(self.compileCommands)): self.runningCommands[i] = utilsObj.formatCommand(self.runningCommands[i], compileFormat)
+        for i in range(len(self.compileCommands)):
+            self.compileCommands[i] = utilsObj.formatCommand(self.compileCommands[i], compileFormat)
+        for i in range(len(self.compileCommands)):
+            self.runningCommands[i] = utilsObj.formatCommand(self.runningCommands[i], compileFormat)
 
         if self.useCustomChecker:
             checkerFormat = self.globalArgs.copy()
@@ -72,14 +74,17 @@ class Config:
 
         generatorFormat = self.globalArgs.copy()
         generatorFormat.update(self.generatorArgs)
-        if self.compileCustomGenerator: self.compileGeneratorCommands = utilsObj.formatCommand(self.compileGeneratorCommands, generatorFormat)
+        if self.compileCustomGenerator:
+            self.compileGeneratorCommands = utilsObj.formatCommand(self.compileGeneratorCommands, generatorFormat)
         self.runningGeneratorCommands = utilsObj.formatCommand(self.runningGeneratorCommands, generatorFormat)
 
         if self.useInteractor:
             interactorFormat = self.globalArgs.copy()
             interactorFormat.update(self.interactorArgs)
-            for i in range(len(self.compileCommandsExtra)): self.compileCommandsExtra[i] = utilsObj.formatCommand(self.compileCommandsExtra[i], interactorFormat)
-            for i in range(len(self.runningCommandsExtra)): self.runningCommandsExtra[i] = utilsObj.formatCommand(self.runningCommandsExtra[i], interactorFormat)
+            for i in range(len(self.compileCommandsExtra)):
+                self.compileCommandsExtra[i] = utilsObj.formatCommand(self.compileCommandsExtra[i], interactorFormat)
+            for i in range(len(self.runningCommandsExtra)):
+                self.runningCommandsExtra[i] = utilsObj.formatCommand(self.runningCommandsExtra[i], interactorFormat)
 
 class Utils:
     def __init__(self):
@@ -93,11 +98,12 @@ class Utils:
                     self.memoryOut = True
                     os.system("taskkill /F /PID {0}".format(pid))
                     return
-            except:
+            except psutil.NoSuchProcess:
                 return
 
     def run(self, *popenargs, timeout=None, memoryLimits, **kwargs):
-        if timeout != None and timeout < 0: timeout=None
+        if timeout is not None and timeout < 0:
+            timeout = None
         with subprocess.Popen(*popenargs, **kwargs) as process:
             monitor = threading.Thread(target=self.memoryMonitor, args=(process.pid, memoryLimits, ))
             monitor.start()
@@ -107,7 +113,7 @@ class Utils:
                 process.kill()
                 raise
             retcode = process.poll()
-        if self.memoryOut == True:
+        if self.memoryOut:
             retcode = 0
         return retcode
 
@@ -177,9 +183,12 @@ class Data:
 
         def useGenerator(*customArgs):
             runningCommand = self.config.runningGeneratorCommands
-            for i in range(len(customArgs)): runningCommand = runningCommand.replace("$[args{0}]".format(i),"{0}".format(customArgs[i]))
-            if self.config.useFileIO: os.system("{0}".format(runningCommand))
-            else: os.system("{0} >> {1}".format(runningCommand,inputFileName))
+            for i in range(len(customArgs)):
+                runningCommand = runningCommand.replace("$[args{0}]".format(i),"{0}".format(customArgs[i]))
+            if self.config.useFileIO:
+                os.system("{0}".format(runningCommand))
+            else:
+                os.system("{0} >> {1}".format(runningCommand,inputFileName))
 
         with open(inputFileName, "a") as inputFile:
             a = random.randint(1,1000000000)
@@ -188,18 +197,25 @@ class Data:
 
         os.system("rename {0} {1}".format(inputFileName,freInputFileName))
         if self.config.useInteractor:
-            if self.config.useFileIO: os.system("{0}".format(self.config.runningCommands[1]))
-            else: os.system("{0} < {1} > {2}".format(self.config.runningCommands[1],freInputFileName,self.config.middleFileName[0]))
+            if self.config.useFileIO:
+                os.system("{0}".format(self.config.runningCommands[1]))
+            else:
+                os.system("{0} < {1} > {2}".format(self.config.runningCommands[1],freInputFileName,self.config.middleFileName[0]))
             if self.config.useMiddleFile:
-                if self.config.useFileIO: os.system("{0}".format(self.config.runningCommandsExtra[2]))
-                else: os.system("{0} < {1} > {2}".format(self.config.runningCommandsExtra[2], self.config.middleFileName[0], self.config.middleFileName[1]))
-            else: os.system("copy {0} {1}".format(self.config.middleFileName[0],self.config.middleFileName[1]))
-            if self.config.useFileIO: os.system("{0}".format(self.config.runningCommandsExtra[1]))
-            else: os.system("{0} < {1} > {2}".format(self.config.runningCommandsExtra[1],self.config.middleFileName[1],freOutputFileName))
+                if self.config.useFileIO:
+                    os.system("{0}".format(self.config.runningCommandsExtra[2]))
+                else:
+                    os.system("{0} < {1} > {2}".format(self.config.runningCommandsExtra[2], self.config.middleFileName[0], self.config.middleFileName[1]))
+            else:
+                os.system("copy {0} {1}".format(self.config.middleFileName[0],self.config.middleFileName[1]))
+            if self.config.useFileIO:
+                os.system("{0}".format(self.config.runningCommandsExtra[1]))
+            else:
+                os.system("{0} < {1} > {2}".format(self.config.runningCommandsExtra[1],self.config.middleFileName[1],freOutputFileName))
             os.system("del {0} /q".format(self.config.middleFileName[0]))
             os.system("del {0} /q".format(self.config.middleFileName[1]))
         else:
-            if self.config.useFileIO==False:
+            if not self.config.useFileIO:
                 os.system("{0} < {1} > {2}".format(self.config.runningCommands[1],freInputFileName,freOutputFileName))
             else:
                 os.system("{0}".format(self.config.runningCommands[1]))
@@ -211,7 +227,7 @@ class Data:
         timeOutTag = False
         memoryOutTag = False
         exitCode = 0
-        if self.config.useFileIO==False:
+        if not self.config.useFileIO:
             inputFilePipe = open("{0}".format(freInputFileName), "r")
             outputFilePipe = open("{0}".format(freOutputFileName), "w")
             try:
@@ -238,13 +254,18 @@ class Data:
         memoryOutTag = False
         exitCode = 0
         timeOutTag, memoryOutTag, exitCode = self.runCode(freInputFileName, self.config.middleFileName[0], self.config.runningCommands[0])
-        if timeOutTag or memoryOutTag or exitCode != 0: return [timeOutTag,memoryOutTag,exitCode,1]
+        if timeOutTag or memoryOutTag or exitCode != 0:
+            return [timeOutTag,memoryOutTag,exitCode,1]
         if self.config.useMiddleFile:
-            if self.config.useFileIO: os.system("{0}".format(self.config.runningCommandsExtra[2]))
-            else: os.system("{0} < {1} > {2}".format(self.config.runningCommandsExtra[2], self.config.middleFileName[0], self.config.middleFileName[1]))
-        else: os.system("copy {0} {1}".format(self.config.middleFileName[0],self.config.middleFileName[1]))
+            if self.config.useFileIO:
+                os.system("{0}".format(self.config.runningCommandsExtra[2]))
+            else:
+                os.system("{0} < {1} > {2}".format(self.config.runningCommandsExtra[2], self.config.middleFileName[0], self.config.middleFileName[1]))
+        else:
+            os.system("copy {0} {1}".format(self.config.middleFileName[0],self.config.middleFileName[1]))
         timeOutTag, memoryOutTag, exitCode = self.runCode(self.config.middleFileName[1], freOutputFileName, self.config.runningCommandsExtra[0])
-        if timeOutTag or memoryOutTag or exitCode != 0: return [timeOutTag,memoryOutTag,exitCode,2]
+        if timeOutTag or memoryOutTag or exitCode != 0:
+            return [timeOutTag,memoryOutTag,exitCode,2]
         return [timeOutTag,memoryOutTag,exitCode,0]
 
     def runHacking(self, id):
@@ -268,9 +289,10 @@ class Data:
             timeOutTag, memoryOutTag, exitCode, resultLevel = self.runningForInteractor(freInputFileName, freOutputFileName)
             os.system("del {0} /q".format(self.config.middleFileName[0]))
             os.system("del {0} /q".format(self.config.middleFileName[1]))
-        else: timeOutTag, memoryOutTag, exitCode = self.runCode(freInputFileName, freOutputFileName, self.config.runningCommands[0])
+        else:
+            timeOutTag, memoryOutTag, exitCode = self.runCode(freInputFileName, freOutputFileName, self.config.runningCommands[0])
 
-        if timeOutTag==False and exitCode==0 and memoryOutTag==False:
+        if not timeOutTag and exitCode == 0 and not memoryOutTag:
             ansFile = open("{0}".format(ansFileName), "r")
             outputFile = open("{0}".format(freOutputFileName), "r")
             ans = ansFile.read()
@@ -299,28 +321,28 @@ class Data:
 
             else:
                 if self.config.ignoreSomeCharactersAtTheEnd:
-                    ans = ans.rstrip("\n");
-                    output = output.rstrip("\n");
-                    anst = ans.splitlines();
-                    outputt = output.splitlines();
+                    ans = ans.rstrip("\n")
+                    output = output.rstrip("\n")
+                    anst = ans.splitlines()
+                    outputt = output.splitlines()
                     if len(anst)==len(outputt):
                         result = 1
                         for i in range(len(anst)):
                             if anst[i].rstrip()!=outputt[i].rstrip():
                                 result = 0
-                                if self.config.saveWrongOutput==True:
+                                if self.config.saveWrongOutput:
                                     os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
                                     os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
                                 break
                     else:
-                        if self.config.saveWrongOutput==True:
+                        if self.config.saveWrongOutput:
                             os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
                             os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
                 else:
                     if ans==output:
                         result = 1
                     else:
-                        if self.config.saveWrongOutput==True:
+                        if self.config.saveWrongOutput:
                             os.system("copy .\\{0} .\\wrongOutput".format(freOutputFileName))
                             os.system("rename .\\wrongOutput\\{0} {1}{2}.{3}".format(freOutputFileName,self.config.wrongOutputFileName[0],id,self.config.wrongOutputFileName[1]))
 
@@ -401,14 +423,16 @@ class Tools:
         def displayLastedLog(self):
             if os.path.isdir(".autohack\\logs\\{0}".format(self.mode)):
                 logs = os.listdir(".autohack\\logs\\{0}".format(self.mode))
-                if len(logs) == 0: print("No logs exist.\n")
+                if len(logs) == 0:
+                    print("No logs exist.\n")
                 else:
                     lastedLog = logs[-1]
                     os.system("del hackLog.{0}.log /q".format(self.mode))
                     os.system("copy .autohack\\logs\\{0}\\{1} .".format(self.mode,lastedLog))
                     os.system("rename {0} hackLog.{1}.log".format(lastedLog,self.mode))
                     os.system("start hackLog.{0}.log".format(self.mode))
-            else: print("No logs exist.\n")
+            else:
+                print("No logs exist.\n")
 
         def exportLogs(self):
             exportFile = open("hackLog.{0}.log".format(self.mode), "w")
@@ -441,9 +465,9 @@ class GUI:
 
         os.chdir("{0}".format(instanceDirectory))
         if instanceName == "":
-            os.system("python {1}".format(directory+"\\_create.py"))
+            os.system("python {0}".format(directory+"\\_create.py"))
         else:
-            os.system("python {1} {2}".format(directory+"\\_create.py",instanceName))
+            os.system("python {0} {1}".format(directory+"\\_create.py",instanceName))
         os.chdir("{0}".format(directory))
 
     def viewDataSet(self):
@@ -459,16 +483,8 @@ class GUI:
                 print()
         sendBackInformation = input("\nc. Create\nq. Exit\nEnter a number to execute: ")
         print()
-        try:
+        if sendBackInformation.isdigit():
             sendBackInformation = int(sendBackInformation)
-        except:
-            if sendBackInformation == "c":
-                dataSetObj.create()
-            elif sendBackInformation == "q":
-                return
-            else:
-                self.viewDataSet()
-        else:
             if sendBackInformation < len(dataSetObj.dataSetList):
                 choiceRes = input("s. Switch\nd. Delete\nEnter a number to execute: ")
                 print()
@@ -478,6 +494,13 @@ class GUI:
                     dataSetObj.delete(sendBackInformation)
                 else:
                     self.viewDataSet()
+            else:
+                self.viewDataSet()
+        else:
+            if sendBackInformation == "c":
+                dataSetObj.create()
+            elif sendBackInformation == "q":
+                return
             else:
                 self.viewDataSet()
 

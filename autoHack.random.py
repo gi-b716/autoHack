@@ -33,17 +33,24 @@ logger.info("Init logger")
 os.system("echo off")
 os.system("cls")
 
-if config.compileBeforeRun==True:
+if config.compileBeforeRun:
     print("Compile program(s)")
     logger.info("Compile program(s)")
-    if config.skipGenerate==False: os.system("{0}".format(config.compileCommands[1]))
-    if config.skipRun==False: os.system("{0}".format(config.compileCommands[0]))
-    if config.useCustomChecker: os.system("{0}".format(config.compileCheckerCommands))
+    if not config.skipGenerate:
+        os.system("{0}".format(config.compileCommands[1]))
+    if not config.skipRun:
+        os.system("{0}".format(config.compileCommands[0]))
+    if config.useCustomChecker:
+        os.system("{0}".format(config.compileCheckerCommands))
     if config.useInteractor:
-        if config.skipGenerate==False: os.system("{0}".format(config.compileCommandsExtra[1]))
-        if config.skipRun==False: os.system("{0}".format(config.compileCommandsExtra[0]))
-        if config.useMiddleFile: os.system("{0}".format(config.compileCommandsExtra[2]))
-    if config.compileCustomGenerator: os.system("{0}".format(config.compileGeneratorCommands))
+        if not config.skipGenerate:
+            os.system("{0}".format(config.compileCommandsExtra[1]))
+        if not config.skipRun:
+            os.system("{0}".format(config.compileCommandsExtra[0]))
+        if config.useMiddleFile:
+            os.system("{0}".format(config.compileCommandsExtra[2]))
+    if config.compileCustomGenerator:
+        os.system("{0}".format(config.compileGeneratorCommands))
     print("Compile done.")
 
 md5Obj = hashlib.md5()
@@ -80,7 +87,7 @@ keepFileObj = open(".\\.autohack\\keep", "w")
 keepFileObj.write("{0}\n".format(md5Result))
 
 # Generate hack data
-if config.skipGenerate==False:
+if not config.skipGenerate:
     logger.info("Start generate hack data")
     if not clearTag:
         os.system("rmdir /s/q hackData")
@@ -99,10 +106,10 @@ else:
     logger.info("Skip generate")
 
 # Start random hacking
-if config.skipRun==False:
+if not config.skipRun:
     logger.info("Start random hacking...")
     os.system("rmdir /s/q wrongOutput")
-    if config.saveWrongOutput==True:
+    if config.saveWrongOutput:
         os.system("md wrongOutput")
         logger.info("Cleaning wrong output history")
     for samplesId in range(runStart, config.numberOfSamples):
@@ -118,9 +125,10 @@ if config.skipRun==False:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
 
-        if result[1]==True:
+        if result[1]:
             logData = "Time Limit Exceeded! Exceed {0} ms".format(result[2])
-            if config.useInteractor: logData="Time Limit Exceeded on part {0}! Exceed {1} ms".format(result[9],result[2])
+            if config.useInteractor:
+                logData = "Time Limit Exceeded on part {0}! Exceed {1} ms".format(result[9],result[2])
             print("{0}".format(logData))
             logger.warning("{0}".format(logData))
             time.sleep(config.waitTime)
@@ -128,15 +136,17 @@ if config.skipRun==False:
 
         elif result[5]!=0:
             logData = "Runtime Error! Exit code: {0}".format(result[5])
-            if config.useInteractor: logData="Runtime Error on part {0}! Exit code: {1}".format(result[9],result[5])
+            if config.useInteractor:
+                logData = "Runtime Error on part {0}! Exit code: {1}".format(result[9],result[5])
             print("{0}".format(logData))
             logger.warning("{0}".format(logData))
             time.sleep(config.waitTime)
             diffCount += 1
 
-        elif result[6]==True:
+        elif result[6]:
             logData = "Memory Limit Exceeded! Exceed {0} MB".format(result[7])
-            if config.useInteractor: logData="Memory Limit Exceeded on part {0}! Exceed {1} MB".format(result[9],result[7])
+            if config.useInteractor:
+                logData = "Memory Limit Exceeded on part {0}! Exceed {1} MB".format(result[9],result[7])
             print("{0}".format(logData))
             logger.warning("{0}".format(logData))
             time.sleep(config.waitTime)

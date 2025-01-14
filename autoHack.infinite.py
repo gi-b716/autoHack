@@ -30,17 +30,20 @@ logger.info("Init logger")
 os.system("echo off")
 os.system("cls")
 
-if config.compileBeforeRun==True:
+if config.compileBeforeRun:
     print("Compile program(s)")
     logger.info("Compile program(s)")
     os.system("{0}".format(config.compileCommands[0]))
     os.system("{0}".format(config.compileCommands[1]))
-    if config.useCustomChecker: os.system("{0}".format(config.compileCheckerCommands))
+    if config.useCustomChecker:
+        os.system("{0}".format(config.compileCheckerCommands))
     if config.useInteractor:
         os.system("{0}".format(config.compileCommandsExtra[1]))
         os.system("{0}".format(config.compileCommandsExtra[0]))
-        if config.useMiddleFile: os.system("{0}".format(config.compileCommandsExtra[2]))
-    if config.compileCustomGenerator: os.system("{0}".format(config.compileGeneratorCommands))
+        if config.useMiddleFile:
+            os.system("{0}".format(config.compileCommandsExtra[2]))
+    if config.compileCustomGenerator:
+        os.system("{0}".format(config.compileGeneratorCommands))
     print("Compile done.")
 
 os.system("rmdir /s/q wrongOutput")
@@ -67,12 +70,13 @@ while True:
     logger.info("Judging data {0}".format(globalCount))
     result = data.runHacking(diffCount)
 
-    if result[1]==True:
+    if result[1]:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
         logData = "Time Limit Exceeded! Exceed {0} ms".format(result[2])
-        if config.useInteractor: logData="Time Limit Exceeded on part {0}! Exceed {1} ms".format(result[9],result[2])
+        if config.useInteractor:
+            logData = "Time Limit Exceeded on part {0}! Exceed {1} ms".format(result[9],result[2])
         print("{0}".format(logData))
         logger.warning("{0}".format(logData))
         time.sleep(config.waitTime)
@@ -83,18 +87,20 @@ while True:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
         logData = "Runtime Error! Exit code: {0}".format(result[5])
-        if config.useInteractor: logData="Runtime Error on part {0}! Exit code: {1}".format(result[9],result[5])
+        if config.useInteractor:
+            logData = "Runtime Error on part {0}! Exit code: {1}".format(result[9],result[5])
         print("{0}".format(logData))
         logger.warning("{0}".format(logData))
         time.sleep(config.waitTime)
         diffCount += 1
 
-    elif result[6]==True:
+    elif result[6]:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
         os.system("cls")
         logData = "Memory Limit Exceeded! Exceed {0} MB".format(result[7])
-        if config.useInteractor: logData="Memory Limit Exceeded on part {0}! Exceed {1} MB".format(result[9],result[7])
+        if config.useInteractor:
+            logData = "Memory Limit Exceeded on part {0}! Exceed {1} MB".format(result[9],result[7])
         print("{0}".format(logData))
         logger.warning("{0}".format(logData))
         time.sleep(config.waitTime)
