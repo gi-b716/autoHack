@@ -120,12 +120,16 @@ while True:
             print("Checker failed!")
             os.system("{0}".format(config.commandAtEnd))
             sys.exit(0)
-        if result[0]!=1:
+        elif result[0]!=1:
             os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
             os.system("move .\\{0} .\\hackData\\{0}".format(refer[1]))
             os.system("cls")
             time.sleep(config.waitTime)
             diffCount += 1
+        else:
+            os.system("del {0} /q".format(refer[0]))
+            os.system("del {0} /q".format(refer[1]))
+            os.system("cls")
 
     elif result[0]==0:
         os.system("move .\\{0} .\\hackData\\{0}".format(refer[0]))
