@@ -1,4 +1,1 @@
-__pycache__/
-*.whl
-*.md
-!README.md
+**/__pycache__/
